@@ -1,0 +1,146 @@
+<app-reporter-nav></app-reporter-nav>
+<div class="page">
+
+  <header class="page-header">
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()">
+
+      ← Back to My Tickets
+    </button>
+
+    <h1>Ticket Details</h1>
+
+  </header>
+
+  <div
+    class="loading"
+    *ngIf="loading">
+
+    Loading ticket...
+  </div>
+
+  <div
+    class="error"
+    *ngIf="errorMessage">
+
+    {{ errorMessage }}
+  </div>
+
+  <ng-container *ngIf="ticket && !loading">
+
+    <section class="ticket-card">
+
+      <div class="ticket-header">
+
+        <div>
+          <h2>{{ ticket.category }}</h2>
+
+          <p class="ticket-id">
+            Ticket #{{ ticket.id }}
+          </p>
+        </div>
+
+        <span
+          class="status"
+          [class.status-new]="ticket.status === 'New'"
+          [class.status-progress]="
+            ticket.status === 'Assigned' ||
+            ticket.status === 'In Progress'
+          "
+          [class.status-resolved]="ticket.status === 'Resolved'">
+
+          {{ displayStatus(ticket.status) }}
+
+        </span>
+
+      </div>
+
+      <div class="details">
+
+        <div class="detail">
+          <span class="label">Campus</span>
+          <span>{{ ticket.campusName }}</span>
+        </div>
+
+        <div class="detail">
+          <span class="label">Building</span>
+          <span>{{ ticket.buildingName }}</span>
+        </div>
+
+        <div class="detail">
+          <span class="label">Room</span>
+          <span>{{ ticket.room }}</span>
+        </div>
+
+        <div class="detail">
+          <span class="label">Reported</span>
+          <span>{{ ticket.createdAt | date:'medium' }}</span>
+        </div>
+
+        <div
+          class="detail"
+          *ngIf="ticket.technicianName">
+
+          <span class="label">Technician</span>
+          <span>{{ ticket.technicianName }}</span>
+
+        </div>
+
+      </div>
+
+      <div class="description">
+
+        <h3>Description</h3>
+
+        <p>{{ ticket.description }}</p>
+
+      </div>
+
+    </section>
+
+    <section class="history">
+
+      <h2>Status History</h2>
+
+      <div
+        class="history-empty"
+        *ngIf="ticket.history.length === 0">
+
+        No status changes recorded yet.
+      </div>
+
+      <div
+        class="history-item"
+        *ngFor="let item of ticket.history">
+
+        <div class="history-marker"></div>
+
+        <div class="history-content">
+
+          <div class="history-status">
+
+            <span *ngIf="item.fromStatus">
+              {{ displayStatus(item.fromStatus) }}
+              →
+            </span>
+
+            {{ displayStatus(item.toStatus) }}
+
+          </div>
+
+          <div class="history-date">
+            {{ item.changedAt | date:'medium' }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </ng-container>
+
+</div>

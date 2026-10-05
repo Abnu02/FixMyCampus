@@ -1,0 +1,48 @@
+.nav {
+  height: 56px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  background: white;
+  font-family: Arial, sans-serif;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.links a {
+  text-decoration: none;
+  color: #555;
+  font-size: 14px;
+}
+
+.links a:hover {
+  color: #111;
+}
+
+.links a.active {
+  color: #111;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .nav {
+    padding: 0 16px;
+  }
+
+  .links {
+    gap: 10px;
+  }
+
+  .links a {
+    font-size: 12px;
+  }
+}
