@@ -8,6 +8,9 @@ using Scalar.AspNetCore;
 using FixMyCampus.Application.Auth;
 using FixMyCampus.Infrastructure.Data;
 using FixMyCampus.Infrastructure.Identity;
+using FixMyCampus.Application.Interfaces;
+using FixMyCampus.Infrastructure.Repositories;
+using FixMyCampus.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +36,12 @@ builder.Services
                 Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
         };
     });
+
+//admin ticket repository
+builder.Services.AddScoped<IAdminTicketRepository, AdminTicketRepository>();
+//status workflow service
+builder.Services.AddScoped<IStatusWorkflowService, StatusWorkflowService>();
+builder.Services.AddScoped<IAdminTicketService, AdminTicketService>();
 
 builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
@@ -60,7 +69,8 @@ using (var scope = app.Services.CreateScope())
         roleManager);
 
     var dbContext = scope.ServiceProvider.GetRequiredService<FixMyCampusDbContext>();
-    await CampusSeeder.SeedAsync(dbContext);
+   await CampusSeeder.SeedAsync(dbContext);
+await TicketSeeder.SeedAsync(dbContext);
 }
 
 app.UseHttpsRedirection();
