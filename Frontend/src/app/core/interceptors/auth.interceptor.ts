@@ -16,9 +16,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(outgoing).pipe(
     catchError((error: HttpErrorResponse) => {
       console.error('[authInterceptor Error]', req.url, 'Status:', error.status, error.message);
-      if (error.status === 401) {
-        authService.clearSession();
-      }
+      // Do NOT call clearSession() here — let each component/guard handle 401s.
+      // Calling clearSession() destroys the session and navigates away, which
+      // prevents components from showing the actual error to the user.
       return throwError(() => error);
     })
   );

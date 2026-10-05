@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Ticket, TicketStatus } from '../../models/ticket.model';
 import { AdminTicketService } from '../../services/admin-ticket.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-ticket-list',
@@ -22,6 +23,7 @@ export class TicketListComponent implements OnInit {
   isLoading = false;
   isAssigning = false;
   errorMessage = '';
+  debugInfo = '';
 
   // Detail Modal State
   selectedTicket: Ticket | null = null;
@@ -30,7 +32,7 @@ export class TicketListComponent implements OnInit {
   // Assignment Form State — uses technicianId (int) to match backend
   assignTechnicianId: number | null = null;
 
-  constructor(private adminTicketService: AdminTicketService) {}
+  constructor(private adminTicketService: AdminTicketService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -39,7 +41,9 @@ export class TicketListComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    console.log('[TicketListComponent] Requesting tickets from adminTicketService...');
+    const token = this.authService.getToken();
+    this.debugInfo = `Token: ${token ? token.substring(0, 20) + '...' : 'MISSING'} | User: ${this.authService.currentUser()?.email || 'none'} | Role: ${this.authService.currentUser()?.role || 'none'}`;
+    console.log('[TicketListComponent] Requesting tickets. Debug:', this.debugInfo);
     this.adminTicketService.getTickets().subscribe({
       next: (data) => {
         console.log('[TicketListComponent] Received data:', data);
@@ -48,6 +52,7 @@ export class TicketListComponent implements OnInit {
           this.categories = this.getUniqueValues(this.tickets.map(ticket => ticket?.category || ''));
           this.buildings = this.getUniqueValues(this.tickets.map(ticket => ticket?.buildingName || ''));
           this.applyFilters();
+          this.debugInfo = `Loaded ${this.tickets.length} tickets OK`;
         } catch (e) {
           console.error('[TicketListComponent] Error processing tickets data:', e);
         } finally {
@@ -55,8 +60,11 @@ export class TicketListComponent implements OnInit {
         }
       },
       error: (err) => {
+        const status = err?.status;
+        const msg = err?.error?.message || err?.message || 'Unknown error';
+        this.debugInfo = `HTTP Error ${status}: ${msg}`;
         console.error('[TicketListComponent] Error loading tickets:', err);
-        this.errorMessage = err?.error?.message || 'Tickets could not be loaded. Please try again.';
+        this.errorMessage = `Error ${status}: ${msg}`;
         this.isLoading = false;
       }
     });
