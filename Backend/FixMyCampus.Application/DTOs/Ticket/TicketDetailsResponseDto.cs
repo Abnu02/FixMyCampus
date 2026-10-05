@@ -9,7 +9,7 @@ public class TicketDetailsResponseDto
     public string Room { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string Status { get; set; } = null!;
-    public int? TechnicianId { get; set; }
+    public string? TechnicianId { get; set; }
     public DateTime CreatedAt { get; set; }
     public IEnumerable<TicketHistoryResponseDto> History { get; set; } = [];
 }
