@@ -30,16 +30,6 @@
 .btn-action.edit { border-color: #93c5fd; color: #2563eb; }
 .btn-action.toggle.deactivate { border-color: #fca5a5; color: #dc2626; }
 .btn-action.toggle.activate { border-color: #86efac; color: #16a34a; }
-.btn-action:disabled { opacity: 0.6; cursor: wait; }
-
-.status-error {
-  padding: 10px 12px;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  color: #b91c1c;
-  background: #fef2f2;
-  font-size: 0.85rem;
-}
 
 .empty-msg { text-align: center; color: #94a3b8; padding: 24px; }
 
