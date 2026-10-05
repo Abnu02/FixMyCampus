@@ -1,0 +1,103 @@
+<app-reporter-nav></app-reporter-nav>
+<div class="page">
+
+  <header class="page-header">
+    <div>
+      <h1>My Tickets</h1>
+      <p>View the issues you have reported.</p>
+    </div>
+
+    <a
+      class="primary-button"
+      routerLink="/reporter/create">
+
+      Report Issue
+    </a>
+  </header>
+
+  <div
+    class="error"
+    *ngIf="errorMessage">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div
+    class="loading"
+    *ngIf="loading">
+
+    Loading your tickets...
+  </div>
+
+  <section
+    class="ticket-list"
+    *ngIf="!loading">
+
+    <div
+      class="empty"
+      *ngIf="tickets.length === 0">
+
+      <p>You have not reported any issues yet.</p>
+
+      <a
+        class="primary-button"
+        routerLink="/reporter/create">
+
+        Report Your First Issue
+      </a>
+    </div>
+
+    <article
+      class="ticket-card"
+      *ngFor="let ticket of tickets">
+
+      <div class="ticket-main">
+
+        <div class="ticket-title">
+          {{ ticket.category }}
+        </div>
+
+        <div class="ticket-location">
+          {{ ticket.campusName }}
+          ·
+          {{ ticket.buildingName }}
+          ·
+          Room {{ ticket.room }}
+        </div>
+
+        <div class="ticket-date">
+          {{ ticket.createdAt | date:'medium' }}
+        </div>
+
+      </div>
+
+      <div class="ticket-actions">
+
+        <span
+          class="status"
+          [class.status-new]="ticket.status === 'New'"
+          [class.status-progress]="
+            ticket.status === 'Assigned' ||
+            ticket.status === 'In Progress'
+          "
+          [class.status-resolved]="ticket.status === 'Resolved'">
+
+          {{ displayStatus(ticket.status) }}
+
+        </span>
+
+        <a
+          class="details-button"
+          [routerLink]="['/reporter/tickets', ticket.id]">
+
+          View
+        </a>
+
+      </div>
+
+    </article>
+
+  </section>
+
+</div>

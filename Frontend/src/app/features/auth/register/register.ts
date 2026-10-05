@@ -1,0 +1,87 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth.service';
+
+// Custom validator ensuring password and confirmPassword match
+export const passwordMatchValidator: ValidatorFn = (
+  control: AbstractControl
+): ValidationErrors | null => {
+  const password = control.get('password');
+  const confirmPassword = control.get('confirmPassword');
+
+  if (!password || !confirmPassword) {
+    return null;
+  }
+
+  return password.value === confirmPassword.value ? null : { passwordMismatch: true };
+};
+
+@Component({
+  selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  templateUrl: './register.html',
+  styleUrl: './register.scss'
+})
+export class RegisterComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  loading = false;
+  errorMessage = '';
+  successMessage = '';
+
+  registerForm = this.fb.nonNullable.group(
+    {
+      displayName: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    },
+    {
+      validators: [passwordMatchValidator]
+    }
+  );
+
+  onSubmit(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+
+    // Send payload matching Backend FixMyCampus.Application.Auth.DTOs.RegisterRequest
+    const { displayName, email, password } = this.registerForm.getRawValue();
+
+    this.authService.register({ displayName, email, password }).subscribe({
+      next: (response) => {
+        this.loading = false;
+        this.successMessage = `Welcome, ${response.displayName}! Account created successfully. Redirecting to login...`;
+
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1500);
+      },
+      error: (error) => {
+        this.loading = false;
+        this.errorMessage =
+          error?.error?.message ??
+          'Registration failed. Please check your details and try again.';
+      }
+    });
+  }
+}

@@ -1,0 +1,57 @@
+<section class="tickets">
+  <div class="section-header">
+    <div>
+      <h2>Assigned Tickets</h2>
+      <p>Tickets assigned to you.</p>
+    </div>
+
+    <span class="ticket-count"> {{ tickets.length }} Tickets </span>
+  </div>
+
+  <div class="ticket-grid">
+    @for (ticket of tickets; track ticket.id) {
+      <article class="ticket-card">
+        <div class="ticket-top">
+          <span class="category">
+            {{ ticket.category }}
+          </span>
+
+          <span class="status">
+            {{ ticket.status }}
+          </span>
+        </div>
+
+        <h3>Ticket #{{ ticket.id }}</h3>
+
+        <p class="description">
+          {{ ticket.description }}
+        </p>
+
+        <div class="location">
+          <span>Building {{ ticket.buildingId }}</span>
+          <span>Room {{ ticket.room }}</span>
+        </div>
+
+        <div class="ticket-footer">
+          <small>{{ ticket.createdAt }}</small>
+
+          <div class="actions">
+            <a [routerLink]="['/technician/tickets', ticket.id]"> View </a>
+
+            @if (ticket.status === 'Assigned') {
+              <button class="accept-btn" (click)="acceptTicket(ticket.id)">Accept</button>
+            }
+
+            @if (ticket.status === 'In Progress') {
+              <button class="resolve-btn" (click)="resolveTicket(ticket.id)">Resolve</button>
+            }
+
+            @if (ticket.status === 'Resolved') {
+              <span class="completed"> ✓ Completed </span>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>

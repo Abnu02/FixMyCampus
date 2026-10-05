@@ -1,0 +1,68 @@
+<app-technician-navbar />
+
+<main class="profile-page">
+
+  <section class="profile-header">
+    <p class="eyebrow">Account</p>
+    <h1>My Profile</h1>
+    <p>View your technician account information.</p>
+  </section>
+
+  @if (user(); as currentUser) {
+
+    <section class="profile-card">
+
+      <div class="profile-top">
+        <div class="avatar">
+          {{ currentUser.displayName.charAt(0).toUpperCase() }}
+        </div>
+
+        <div>
+          <h2>{{ currentUser.displayName }}</h2>
+          <span class="role">{{ currentUser.role }}</span>
+        </div>
+      </div>
+
+      <div class="profile-details">
+
+        <div class="detail">
+          <span>Email</span>
+          <strong>{{ currentUser.email }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Role</span>
+          <strong>{{ currentUser.role }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Account Status</span>
+          <strong class="status">
+            Active
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="profile-actions">
+        <button
+          type="button"
+          class="logout-btn"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+      </div>
+
+    </section>
+
+  } @else {
+
+    <section class="empty-state">
+      <h2>Profile unavailable</h2>
+      <p>Please log in again to view your profile.</p>
+    </section>
+
+  }
+
+</main>

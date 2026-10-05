@@ -1,0 +1,37 @@
+<nav class="navbar">
+  <!-- Logo -->
+  <a routerLink="/technician" class="brand">
+    <span class="brand-icon">F</span>
+    <span>FixMyCampus</span>
+  </a>
+
+  <!-- Navigation -->
+  <div class="nav-links">
+    <a
+      routerLink="/technician"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      Assigned
+    </a>
+
+    <a routerLink="/technician/resolved" routerLinkActive="active"> Resolved </a>
+  </div>
+
+  <!-- Profile -->
+  <div class="profile">
+    <button class="profile-btn">
+      <div class="avatar">T</div>
+
+      <div class="profile-info">
+        <span>Technician</span>
+        <small>Technician</small>
+      </div>
+    </button>
+
+    <div class="profile-menu">
+      <a routerLink="/technician/profile"> Profile </a>
+      <button type="button" class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</nav>

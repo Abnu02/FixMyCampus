@@ -1,0 +1,130 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="brand-mark">
+        <span class="material-symbols-outlined text-on-primary text-[20px]">campaign</span>
+      </div>
+      <div>
+        <h1>FixMyCampus</h1>
+        <p>Create your campus reporter account</p>
+      </div>
+    </div>
+
+    <div class="auth-heading">
+      <h2>Create an account</h2>
+      <p>Report campus issues and track their maintenance in real-time.</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="error-message">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="success-message">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Display Name / Full Name -->
+      <div class="form-group">
+        <label for="reg-name">Full Name</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">person</span>
+          <input
+            id="reg-name"
+            type="text"
+            formControlName="displayName"
+            placeholder="e.g. Abebe Kebede"
+            autocomplete="name"
+          />
+        </div>
+        @if (
+          registerForm.controls.displayName.touched && registerForm.controls.displayName.invalid
+        ) {
+          <small class="field-error">Please provide your full name.</small>
+        }
+      </div>
+
+      <!-- Campus Email -->
+      <div class="form-group">
+        <label for="reg-email">Campus Email</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">mail</span>
+          <input
+            id="reg-email"
+            type="email"
+            formControlName="email"
+            placeholder="user@hackathon.local"
+            autocomplete="email"
+          />
+        </div>
+        @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+          <small class="field-error">Please provide a valid email address.</small>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="reg-password">Password</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">lock</span>
+          <input
+            id="reg-password"
+            type="password"
+            formControlName="password"
+            placeholder="At least 6 characters (e.g. User123!)"
+            autocomplete="new-password"
+          />
+        </div>
+        @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+          <small class="field-error">Password must be at least 6 characters long.</small>
+        }
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="reg-confirm-password">Confirm Password</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">lock_reset</span>
+          <input
+            id="reg-confirm-password"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Re-enter your password"
+            autocomplete="new-password"
+          />
+        </div>
+        @if (
+          registerForm.controls.confirmPassword.touched &&
+          registerForm.controls.confirmPassword.hasError('required')
+        ) {
+          <small class="field-error">Please confirm your password.</small>
+        } @else if (
+          registerForm.hasError('passwordMismatch') &&
+          (registerForm.controls.confirmPassword.touched || registerForm.controls.password.touched)
+        ) {
+          <small class="field-error">Passwords do not match.</small>
+        }
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="loading">
+        @if (loading) {
+          <span>Creating account...</span>
+        } @else {
+          <span>Create Account</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        }
+      </button>
+    </form>
+
+    <div class="register-link">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Sign in</a>
+    </div>
+  </div>
+</div>

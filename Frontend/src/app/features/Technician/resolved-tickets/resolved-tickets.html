@@ -1,0 +1,29 @@
+<app-technician-navbar />
+
+<main class="resolved-page">
+  <h1>Resolved Tickets</h1>
+  <p>Tickets you have completed.</p>
+
+  <div class="ticket-grid">
+    @for (ticket of tickets; track ticket.id) {
+      <article class="ticket-card">
+        <div class="ticket-top">
+          <span>{{ ticket.category }}</span>
+          <span class="status">Resolved ✓</span>
+        </div>
+
+        <h3>Ticket #{{ ticket.id }}</h3>
+
+        <p>{{ ticket.description }}</p>
+
+        <div class="location">
+          Building {{ ticket.buildingId }} · Room {{ ticket.room }}
+        </div>
+
+        <a [routerLink]="['/technician/tickets', ticket.id]">
+          View Details →
+        </a>
+      </article>
+    }
+  </div>
+</main>

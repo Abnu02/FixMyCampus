@@ -1,0 +1,175 @@
+<app-reporter-nav></app-reporter-nav>
+<div class="page">
+
+  <header class="page-header">
+    <div>
+      <h1>Campus Issues</h1>
+      <p>View reported issues across campus.</p>
+    </div>
+
+    <button class="primary-button">
+      <a
+  class="primary-button"
+  routerLink="/reporter/create">
+
+  Report Issue
+</a>
+    </button>
+  </header>
+
+  <section class="filters">
+
+    <div class="filter">
+      <label>Category</label>
+
+      <select
+        [(ngModel)]="selectedCategory"
+        (change)="applyFilters()">
+
+        <option value="">All categories</option>
+
+        <option
+          *ngFor="let category of getCategories()"
+          [value]="category">
+
+          {{ category }}
+
+        </option>
+      </select>
+    </div>
+
+    <div class="filter">
+      <label>Campus</label>
+
+      <select
+        [(ngModel)]="selectedCampus"
+        (change)="onCampusChange()">
+
+        <option value="">All campuses</option>
+
+        <option
+          *ngFor="let campus of campuses"
+          [value]="campus.id">
+
+          {{ campus.name }}
+
+        </option>
+      </select>
+    </div>
+
+    <div class="filter">
+      <label>Building</label>
+
+      <select
+        [(ngModel)]="selectedBuilding"
+        (change)="applyFilters()"
+        [disabled]="!selectedCampus">
+
+        <option value="">All buildings</option>
+
+        <option
+          *ngFor="let building of buildings"
+          [value]="building.id">
+
+          {{ building.name }}
+
+        </option>
+      </select>
+    </div>
+
+    <div class="filter">
+      <label>Status</label>
+
+      <select
+        [(ngModel)]="selectedStatus"
+        (change)="applyFilters()">
+
+        <option value="">All statuses</option>
+
+        <option
+          *ngFor="let status of getStatuses()"
+          [value]="status">
+
+          {{ status }}
+
+        </option>
+      </select>
+    </div>
+
+    <button
+      class="clear-button"
+      (click)="clearFilters()">
+
+      Clear
+    </button>
+
+  </section>
+
+  <div
+    class="error"
+    *ngIf="errorMessage">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div
+    class="loading"
+    *ngIf="loading">
+
+    Loading issues...
+  </div>
+
+  <section
+    class="ticket-list"
+    *ngIf="!loading">
+
+    <div
+      class="empty"
+      *ngIf="filteredTickets.length === 0">
+
+      No issues found.
+    </div>
+
+    <article
+      class="ticket-card"
+      *ngFor="let ticket of filteredTickets">
+
+      <div class="ticket-main">
+
+        <div class="ticket-title">
+          {{ ticket.category }}
+        </div>
+
+        <div class="ticket-location">
+          {{ ticket.campusName }}
+          ·
+          {{ ticket.buildingName }}
+          ·
+          Room {{ ticket.room }}
+        </div>
+
+        <div class="ticket-date">
+          {{ ticket.createdAt | date:'medium' }}
+        </div>
+
+      </div>
+
+      <span
+        class="status"
+        [class.status-new]="ticket.status === 'New'"
+        [class.status-progress]="
+          ticket.status === 'Assigned' ||
+          ticket.status === 'In Progress'
+        "
+        [class.status-resolved]="ticket.status === 'Resolved'">
+
+        {{ displayStatus(ticket.status) }}
+
+      </span>
+
+    </article>
+
+  </section>
+
+</div>

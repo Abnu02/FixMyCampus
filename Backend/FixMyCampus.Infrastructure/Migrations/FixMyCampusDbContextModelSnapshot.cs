@@ -101,8 +101,8 @@ namespace FixMyCampus.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TechnicianName")
-                        .HasColumnType("text");
+                    b.Property<int?>("TechnicianID")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
