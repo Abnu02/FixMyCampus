@@ -1,0 +1,12 @@
+namespace FixMyCampus.Application.DTOs.Ticket;
+
+public class TicketListResponseDto
+{
+    public int Id { get; set; }
+    public string Category { get; set; } = null!;
+    public string BuildingName { get; set; } = null!;
+    public string CampusName { get; set; } = null!;
+    public string Room { get; set; } = null!;
+    public string Status { get; set; } = null!;
+    public DateTime CreatedAt { get; set; }
+}

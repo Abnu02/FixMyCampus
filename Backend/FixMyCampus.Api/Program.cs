@@ -6,8 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 using FixMyCampus.Application.Auth;
+using FixMyCampus.Application.Interfaces;
 using FixMyCampus.Infrastructure.Data;
 using FixMyCampus.Infrastructure.Identity;
+using FixMyCampus.Application.Interfaces;
+using FixMyCampus.Infrastructure.Repositories;
+using FixMyCampus.Application.Services;
+using FixMyCampus.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,20 +48,28 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+//admin ticket repository
+builder.Services.AddScoped<IAdminTicketRepository, AdminTicketRepository>();
+//status workflow service
+builder.Services.AddScoped<IStatusWorkflowService, StatusWorkflowService>();
+builder.Services.AddScoped<IAdminTicketService, AdminTicketService>();
+
 builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
-
 builder.Services.AddIdentityServices();
+
+builder.Services.AddScoped<ICampusService, CampusService>();
+builder.Services.AddScoped<IBuildingService, BuildingService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 app.UseCors("Frontend");
-using (
-    var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var userManager =
         scope.ServiceProvider
@@ -69,6 +82,10 @@ using (
     await IdentitySeeder.SeedAsync(
         userManager,
         roleManager);
+
+    var dbContext = scope.ServiceProvider.GetRequiredService<FixMyCampusDbContext>();
+   await CampusSeeder.SeedAsync(dbContext);
+await TicketSeeder.SeedAsync(dbContext);
 }
 
 app.UseHttpsRedirection();
