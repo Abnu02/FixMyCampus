@@ -49,13 +49,6 @@
       </select>
     </div>
 
-    <div class="filter-group">
-      <label>Campus</label>
-      <select [(ngModel)]="selectedCampus" (ngModelChange)="applyFilters()" class="filter-select">
-        <option value="All">All Campuses</option>
-        <option *ngFor="let camp of campuses; trackBy: trackByValue" [value]="camp">{{ camp }}</option>
-      </select>
-    </div>
 
     <div class="filter-group">
       <label>Building</label>
@@ -87,7 +80,7 @@
           <td>
             <span class="category-tag">{{ ticket.category }}</span>
           </td>
-          <td>{{ ticket.campusName }} — <strong>{{ ticket.buildingName }}</strong></td>
+          <td><strong>{{ ticket.buildingName }}</strong></td>
           <td>{{ ticket.room }}</td>
           <td>
             <span class="status-badge" [ngClass]="getStatusBadgeClass(ticket.status)">
@@ -95,11 +88,11 @@
             </span>
           </td>
           <td>
-            <span *ngIf="ticket.technicianName" class="tech-name">
+            <span *ngIf="ticket.technicianID" class="tech-name">
               <svg class="tech-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-              {{ ticket.technicianName }}
+              #{{ ticket.technicianID }}
             </span>
-            <span *ngIf="!ticket.technicianName" class="unassigned-text">Unassigned</span>
+            <span *ngIf="!ticket.technicianID" class="unassigned-text">Unassigned</span>
           </td>
           <td class="date-cell">{{ ticket.createdAt | date:'medium' }}</td>
           <td class="text-right">
@@ -126,7 +119,7 @@
     <div class="modal-header">
       <div>
         <h3>Ticket #{{ selectedTicket?.id }}: {{ selectedTicket?.category }}</h3>
-        <span class="modal-sub">{{ selectedTicket?.campusName }} / {{ selectedTicket?.buildingName }} (Room {{ selectedTicket?.room }})</span>
+        <span class="modal-sub">{{ selectedTicket?.buildingName }} (Room {{ selectedTicket?.room }})</span>
       </div>
       <button class="close-btn" (click)="closeDetailModal()">×</button>
     </div>
@@ -147,7 +140,7 @@
         <p class="description-box">{{ selectedTicket.description }}</p>
       </div>
 
-      <!-- Technician Assignment Form (Cascading Selects) -->
+      <!-- Technician Assignment Form -->
       <div class="modal-section assign-box" *ngIf="selectedTicket.status === 'New' || selectedTicket.status === 'Assigned'">
         <h4 class="assign-title">
           <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
@@ -155,29 +148,23 @@
         </h4>
 
         <div class="assign-form-grid">
-          <!-- Step 1: Select Technician Specialty/Type -->
           <div class="form-group">
-            <label>1. Select Specialty / Type</label>
-            <select [(ngModel)]="assignTechnicianType" (ngModelChange)="onTechnicianTypeChange()" class="filter-select">
-              <option value="">-- Choose Specialization --</option>
-              <option *ngFor="let cat of technicianCategories; trackBy: trackTechnicianCategory" [value]="cat.type">{{ cat.type }}</option>
-            </select>
-          </div>
-
-          <!-- Step 2: Select Technician from Specialty -->
-          <div class="form-group">
-            <label>2. Select Technician</label>
-            <select [(ngModel)]="assignTechnicianName" [disabled]="!assignTechnicianType" class="filter-select">
-              <option value="">-- Choose Individual --</option>
-              <option *ngFor="let tech of availableTechnicians; trackBy: trackByValue" [value]="tech">{{ tech }}</option>
-            </select>
+            <label for="technicianIdInput">Technician ID</label>
+            <input
+              id="technicianIdInput"
+              type="number"
+              min="1"
+              [(ngModel)]="assignTechnicianId"
+              placeholder="Enter technician ID (e.g. 1)"
+              class="filter-input"
+            />
           </div>
         </div>
 
         <div class="assign-action">
           <button
             class="btn-assign"
-            [disabled]="!assignTechnicianType || !assignTechnicianName || isAssigning"
+            [disabled]="!assignTechnicianId || isAssigning"
             (click)="submitAssignment()">
             {{ isAssigning ? 'Assigning...' : 'Confirm Assignment & Update Status to Assigned' }}
           </button>

@@ -28,16 +28,25 @@ export class CampusManagementComponent implements OnInit {
   // --- CAMPUS OPERATIONS ---
   loadCampuses(): void {
     this.isLoading = true;
+    this.errorMessage = '';
+    console.log('[CampusManagementComponent] Requesting campuses...');
     this.campusService.getCampuses().subscribe({
       next: data => {
-        this.campuses = data;
-        this.isLoading = false;
-        if (!this.selectedCampus && this.campuses.length > 0) {
-          this.selectCampus(this.campuses[0]);
+        console.log('[CampusManagementComponent] Received campuses:', data);
+        try {
+          this.campuses = Array.isArray(data) ? data : [];
+          if (!this.selectedCampus && this.campuses.length > 0) {
+            this.selectCampus(this.campuses[0]);
+          }
+        } catch (e) {
+          console.error('[CampusManagementComponent] Error processing campuses:', e);
+        } finally {
+          this.isLoading = false;
         }
       },
-      error: () => {
-        this.errorMessage = 'Campuses could not be loaded.';
+      error: (err) => {
+        console.error('[CampusManagementComponent] Error loading campuses:', err);
+        this.errorMessage = err?.error?.message || 'Campuses could not be loaded.';
         this.isLoading = false;
       }
     });

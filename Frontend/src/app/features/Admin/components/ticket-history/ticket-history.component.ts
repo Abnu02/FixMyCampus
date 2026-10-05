@@ -32,15 +32,23 @@ export class TicketHistoryComponent implements OnInit {
   loadHistory(): void {
     this.isLoading = true;
     this.errorMessage = '';
+    console.log('[TicketHistoryComponent] Requesting resolved tickets...');
     this.ticketService.getResolvedTickets().subscribe({
       next: (tickets) => {
-        this.resolvedTickets = tickets;
-        this.categories = this.getUniqueValues(tickets.map(ticket => ticket.category));
-        this.applyFilters();
-        this.isLoading = false;
+        console.log('[TicketHistoryComponent] Received resolved tickets:', tickets);
+        try {
+          this.resolvedTickets = Array.isArray(tickets) ? tickets : [];
+          this.categories = this.getUniqueValues(this.resolvedTickets.map(ticket => ticket?.category || ''));
+          this.applyFilters();
+        } catch (e) {
+          console.error('[TicketHistoryComponent] Error processing resolved tickets:', e);
+        } finally {
+          this.isLoading = false;
+        }
       },
-      error: () => {
-        this.errorMessage = 'Resolved tickets could not be loaded. Please try again.';
+      error: (err) => {
+        console.error('[TicketHistoryComponent] Error loading history:', err);
+        this.errorMessage = err?.error?.message || 'Resolved tickets could not be loaded. Please try again.';
         this.isLoading = false;
       }
     });

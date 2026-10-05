@@ -82,28 +82,19 @@
         <option
           *ngFor="let building of buildings"
           [value]="building.id">
-
-          {{ building.name }} (Rooms 1-{{ building.rooms }})
-
+          {{ building.name }}
         </option>
       </select>
     </div>
 
     <div class="field">
-      <label for="room">
-        Room Number
-        <span *ngIf="getSelectedBuildingMaxRooms()" class="hint">
-          (Range: 1 - {{ getSelectedBuildingMaxRooms() }})
-        </span>
-      </label>
+      <label for="room">Room Number</label>
 
       <input
-        type="number"
+        type="text"
         id="room"
         formControlName="room"
-        [min]="1"
-        [max]="getSelectedBuildingMaxRooms() ?? 9999"
-        [placeholder]="getSelectedBuildingMaxRooms() ? 'e.g. 1 to ' + getSelectedBuildingMaxRooms() : 'Select building first'" />
+        placeholder="e.g. 101, Lab 3, etc." />
 
       <small
         *ngIf="
@@ -111,22 +102,6 @@
           form.controls.room.errors?.['required']
         ">
         Room number is required.
-      </small>
-
-      <small
-        *ngIf="
-          form.controls.room.touched &&
-          form.controls.room.errors?.['min']
-        ">
-        Room number must be 1 or greater.
-      </small>
-
-      <small
-        *ngIf="
-          form.controls.room.touched &&
-          form.controls.room.errors?.['max']
-        ">
-        Room number cannot exceed {{ getSelectedBuildingMaxRooms() }} for this building.
       </small>
     </div>
 

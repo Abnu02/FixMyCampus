@@ -39,16 +39,24 @@ export class TicketListComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
     this.errorMessage = '';
+    console.log('[TicketListComponent] Requesting tickets from adminTicketService...');
     this.adminTicketService.getTickets().subscribe({
       next: (data) => {
-        this.tickets = data;
-        this.categories = this.getUniqueValues(data.map(ticket => ticket.category));
-        this.buildings = this.getUniqueValues(data.map(ticket => ticket.buildingName));
-        this.applyFilters();
-        this.isLoading = false;
+        console.log('[TicketListComponent] Received data:', data);
+        try {
+          this.tickets = Array.isArray(data) ? data : [];
+          this.categories = this.getUniqueValues(this.tickets.map(ticket => ticket?.category || ''));
+          this.buildings = this.getUniqueValues(this.tickets.map(ticket => ticket?.buildingName || ''));
+          this.applyFilters();
+        } catch (e) {
+          console.error('[TicketListComponent] Error processing tickets data:', e);
+        } finally {
+          this.isLoading = false;
+        }
       },
-      error: () => {
-        this.errorMessage = 'Tickets could not be loaded. Please try again.';
+      error: (err) => {
+        console.error('[TicketListComponent] Error loading tickets:', err);
+        this.errorMessage = err?.error?.message || 'Tickets could not be loaded. Please try again.';
         this.isLoading = false;
       }
     });

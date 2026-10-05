@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('fixmycampus_token');
+    return localStorage.getItem('fixmycampus_token') || localStorage.getItem('token');
   }
 
   private getStoredUser(): AuthResponse | null {

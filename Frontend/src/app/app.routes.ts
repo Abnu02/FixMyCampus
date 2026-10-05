@@ -14,6 +14,11 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'auth/login',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
     path: 'admin',
     canActivate: [roleGuard(['Admin'])],
     loadChildren: () =>

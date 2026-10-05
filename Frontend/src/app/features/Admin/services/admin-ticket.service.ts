@@ -24,10 +24,10 @@ export class AdminTicketService {
   }
 
   /**
-   * Fetch resolved tickets (filter client-side from all tickets)
+   * Fetch resolved tickets (filter client-side or backend-side)
    */
   getResolvedTickets(): Observable<ResolvedTicket[]> {
-    return this.getTickets('Resolved' as unknown as undefined, 'Resolved').pipe(
+    return this.getTickets(undefined, 'Resolved').pipe(
       map(tickets =>
         tickets.map(ticket => ({
           ...ticket,

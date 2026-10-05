@@ -1,7 +1,7 @@
-import { Component, Injectable } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 
-@Injectable()
 @Component({
   selector: 'app-admin-layout',
   standalone: false,
@@ -13,12 +13,18 @@ export class AdminLayoutComponent {
   isMobileOpen = false;
   isProfileMenuOpen = false;
 
-  adminUser = {
-    name: 'Admin User',
-    email: 'admin@campus.edu'
-  };
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
-  constructor(private router: Router) {}
+  get adminUser() {
+    const user = this.authService.currentUser();
+    return {
+      name: user?.displayName || 'Hackathon Admin',
+      email: user?.email || 'admin@hackathon.local'
+    };
+  }
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -33,7 +39,6 @@ export class AdminLayoutComponent {
   }
 
   logout() {
-    // Clear tokens & route to login
-    localStorage.removeItem('token');
-    this.router.navigate(['/auth/login']);
-  }}
+    this.authService.logout();
+  }
+}
