@@ -140,7 +140,36 @@
         <p class="description-box">{{ selectedTicket.description }}</p>
       </div>
 
-      <!-- Technician Assignment Form -->
+      <!-- ── Change Status ───────────────────────────────── -->
+      <div class="modal-section assign-box">
+        <h4 class="assign-title">
+          <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Change Status
+        </h4>
+
+        <div class="assign-form-grid">
+          <div class="form-group">
+            <label for="statusSelect">New Status</label>
+            <select id="statusSelect" [(ngModel)]="selectedNewStatus" class="filter-input">
+              <option *ngFor="let s of statuses" [value]="s"
+                [disabled]="s === selectedTicket?.status || s === 'New'">
+                {{ getStatusLabel(s) }}{{ s === selectedTicket?.status ? ' (current)' : s === 'New' ? ' (initial only)' : '' }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="assign-action">
+          <button
+            class="btn-assign btn-status-change"
+            [disabled]="!selectedNewStatus || selectedNewStatus === selectedTicket?.status || isChangingStatus"
+            (click)="submitStatusChange()">
+            {{ isChangingStatus ? 'Updating...' : 'Confirm Status Change' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Technician Assignment Form ─────────────────── -->
       <div class="modal-section assign-box" *ngIf="selectedTicket.status === 'New' || selectedTicket.status === 'Assigned'">
         <h4 class="assign-title">
           <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
@@ -171,6 +200,7 @@
         </div>
         <p class="list-message error-message" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
       </div>
+
 
       <!-- Lifecycle History Timeline -->
       <div class="modal-section" *ngIf="selectedTicket.history && selectedTicket.history.length > 0">

@@ -22,6 +22,7 @@ export class TicketListComponent implements OnInit {
   searchQuery = '';
   isLoading = false;
   isAssigning = false;
+  isChangingStatus = false;
   errorMessage = '';
 
   // Detail Modal State
@@ -30,6 +31,9 @@ export class TicketListComponent implements OnInit {
 
   // Assignment Form State — uses technicianId (int) to match backend
   assignTechnicianId: number | null = null;
+
+  // Status Change State
+  selectedNewStatus: TicketStatus | '' = '';
 
   constructor(private adminTicketService: AdminTicketService) {}
 
@@ -88,6 +92,7 @@ export class TicketListComponent implements OnInit {
       next: (detail) => {
         this.selectedTicket = detail ?? ticket;
         this.assignTechnicianId = this.selectedTicket.technicianID ?? null;
+        this.selectedNewStatus = this.selectedTicket.status as TicketStatus;
         this.isDetailModalOpen = true;
       },
       error: () => {
@@ -100,6 +105,28 @@ export class TicketListComponent implements OnInit {
     this.isDetailModalOpen = false;
     this.selectedTicket = null;
     this.assignTechnicianId = null;
+    this.selectedNewStatus = '';
+  }
+
+  submitStatusChange(): void {
+    if (!this.selectedTicket || !this.selectedNewStatus || this.isChangingStatus) return;
+    if (this.selectedNewStatus === this.selectedTicket.status) {
+      this.errorMessage = 'Please select a different status.';
+      return;
+    }
+    this.isChangingStatus = true;
+    this.errorMessage = '';
+    this.adminTicketService.updateStatus(this.selectedTicket.id, this.selectedNewStatus).subscribe({
+      next: () => {
+        this.isChangingStatus = false;
+        this.closeDetailModal();
+        this.loadData();
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Status update failed. Please try again.';
+        this.isChangingStatus = false;
+      }
+    });
   }
 
   private getUniqueValues(values: string[]): string[] {
