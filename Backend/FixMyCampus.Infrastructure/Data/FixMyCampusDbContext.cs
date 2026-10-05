@@ -1,8 +1,10 @@
+using FixMyCampus.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FixMyCampus.Infrastructure.Data;
 
-public class FixMyCampusDbContext : DbContext
+public class FixMyCampusDbContext : IdentityDbContext<ApplicationUser>
 {
     public FixMyCampusDbContext(
         DbContextOptions<FixMyCampusDbContext> options)
