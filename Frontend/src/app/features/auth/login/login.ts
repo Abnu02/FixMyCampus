@@ -24,18 +24,18 @@ export class LoginComponent {
     password: ['', [Validators.required]]
   });
 
-  // 1-Click test accounts for judges and quick testing
+  // 1-Click test accounts matching Backend IdentitySeeder
   fillReporterDemo(): void {
     this.loginForm.patchValue({
-      email: 'student@campus.edu',
-      password: 'Password123!'
+      email: 'user@hackathon.local',
+      password: 'User123!'
     });
   }
 
   fillAdminDemo(): void {
     this.loginForm.patchValue({
-      email: 'admin@campus.edu',
-      password: 'Password123!'
+      email: 'admin@hackathon.local',
+      password: 'Admin123!'
     });
   }
 
@@ -51,14 +51,14 @@ export class LoginComponent {
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: (response) => {
-        this.authService.saveSession(response);
+        this.loading = false;
         this.navigateByRole(response.role);
       },
       error: (error) => {
         this.loading = false;
         this.errorMessage =
           error?.error?.message ??
-          'Invalid campus email or password. Please try again.';
+          'Invalid email or password. Please try again.';
       }
     });
   }

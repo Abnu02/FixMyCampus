@@ -1,8 +1,9 @@
-export type UserRole = 'Reporter' | 'Admin';
+export type UserRole = 'Reporter' | 'Admin' | string;
 
 export interface RegisterRequest {
   email: string;
   password: string;
+  displayName: string;
 }
 
 export interface LoginRequest {
@@ -10,16 +11,10 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface UserResponse {
+export interface AuthResponse {
+  token: string;
   userId: string;
   email: string;
+  displayName: string;
   role: UserRole;
-}
-
-export interface LoginResponse extends UserResponse {
-  token?: string;
-}
-
-export interface MessageResponse {
-  message: string;
 }

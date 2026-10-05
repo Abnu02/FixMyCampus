@@ -11,7 +11,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 
-// Custom validator to ensure password and confirmPassword match
+// Custom validator ensuring password and confirmPassword match
 export const passwordMatchValidator: ValidatorFn = (
   control: AbstractControl
 ): ValidationErrors | null => {
@@ -43,6 +43,7 @@ export class RegisterComponent {
 
   registerForm = this.fb.nonNullable.group(
     {
+      displayName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
@@ -63,14 +64,13 @@ export class RegisterComponent {
 
     this.loading = true;
 
-    // Send only email and password to the API endpoint
-    const { email, password } = this.registerForm.getRawValue();
+    // Send payload matching Backend FixMyCampus.Application.Auth.DTOs.RegisterRequest
+    const { displayName, email, password } = this.registerForm.getRawValue();
 
-    this.authService.register({ email, password }).subscribe({
+    this.authService.register({ displayName, email, password }).subscribe({
       next: (response) => {
         this.loading = false;
-        this.successMessage =
-          response.message || 'Account created successfully! Redirecting to login...';
+        this.successMessage = `Welcome, ${response.displayName}! Account created successfully. Redirecting to login...`;
 
         setTimeout(() => {
           this.router.navigate(['/login']);

@@ -13,7 +13,7 @@
 
     <div class="auth-heading">
       <h2>Create an account</h2>
-      <p>Report broken facilities and track their repairs in real-time.</p>
+      <p>Report campus issues and track their maintenance in real-time.</p>
     </div>
 
     @if (errorMessage) {
@@ -32,6 +32,25 @@
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
+      <!-- Display Name / Full Name -->
+      <div class="form-group">
+        <label for="reg-name">Full Name</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">person</span>
+          <input
+            id="reg-name"
+            type="text"
+            formControlName="displayName"
+            placeholder="e.g. Abebe Kebede"
+            autocomplete="name"
+          />
+        </div>
+        @if (registerForm.controls.displayName.touched && registerForm.controls.displayName.invalid) {
+          <small class="field-error">Please provide your full name.</small>
+        }
+      </div>
+
+      <!-- Campus Email -->
       <div class="form-group">
         <label for="reg-email">Campus Email</label>
         <div class="input-wrapper">
@@ -40,15 +59,16 @@
             id="reg-email"
             type="email"
             formControlName="email"
-            placeholder="student@campus.edu"
+            placeholder="user@hackathon.local"
             autocomplete="email"
           />
         </div>
         @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
-          <small class="field-error">Please provide a valid campus email address.</small>
+          <small class="field-error">Please provide a valid email address.</small>
         }
       </div>
 
+      <!-- Password -->
       <div class="form-group">
         <label for="reg-password">Password</label>
         <div class="input-wrapper">
@@ -57,7 +77,7 @@
             id="reg-password"
             type="password"
             formControlName="password"
-            placeholder="At least 6 characters (e.g. Student@123)"
+            placeholder="At least 6 characters (e.g. User123!)"
             autocomplete="new-password"
           />
         </div>
@@ -66,6 +86,7 @@
         }
       </div>
 
+      <!-- Confirm Password -->
       <div class="form-group">
         <label for="reg-confirm-password">Confirm Password</label>
         <div class="input-wrapper">

@@ -1,12 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 import {
   LoginRequest,
-  LoginResponse,
   RegisterRequest,
-  UserResponse,
-  MessageResponse
+  AuthResponse
 } from './auth.models';
 
 @Injectable({
@@ -16,34 +15,28 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  // Default API endpoint - adjust port to match backend
-  private readonly apiUrl = 'http://localhost:5151/api/v1/auth';
+  // Backend API URL matching Backend/FixMyCampus.Api launchSettings.json (port 5168)
+  private readonly apiUrl = 'http://localhost:5168/api/v1/auth';
 
   // Signals for reactive session management
-  readonly currentUser = signal<UserResponse | null>(this.getStoredUser());
+  readonly currentUser = signal<AuthResponse | null>(this.getStoredUser());
   readonly isAuthenticated = signal<boolean>(!!localStorage.getItem('fixmycampus_token'));
 
-  login(request: LoginRequest) {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request);
+  login(request: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request).pipe(
+      tap((response) => this.saveSession(response))
+    );
   }
 
-  register(request: RegisterRequest) {
-    return this.http.post<MessageResponse>(`${this.apiUrl}/register`, request);
+  register(request: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request);
   }
 
-  saveSession(response: LoginResponse): void {
-    const token = response.token ?? response.userId;
-    localStorage.setItem('fixmycampus_token', token);
+  saveSession(response: AuthResponse): void {
+    localStorage.setItem('fixmycampus_token', response.token);
+    localStorage.setItem('fixmycampus_user', JSON.stringify(response));
 
-    const user: UserResponse = {
-      userId: response.userId,
-      email: response.email,
-      role: response.role
-    };
-
-    localStorage.setItem('fixmycampus_user', JSON.stringify(user));
-
-    this.currentUser.set(user);
+    this.currentUser.set(response);
     this.isAuthenticated.set(true);
   }
 
@@ -65,14 +58,14 @@ export class AuthService {
     return localStorage.getItem('fixmycampus_token');
   }
 
-  private getStoredUser(): UserResponse | null {
+  private getStoredUser(): AuthResponse | null {
     const user = localStorage.getItem('fixmycampus_user');
     if (!user) {
       return null;
     }
 
     try {
-      return JSON.parse(user) as UserResponse;
+      return JSON.parse(user) as AuthResponse;
     } catch {
       return null;
     }
