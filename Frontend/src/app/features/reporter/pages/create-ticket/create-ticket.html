@@ -1,0 +1,183 @@
+<app-reporter-nav></app-reporter-nav>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <h1>Report an Issue</h1>
+      <p>Provide the location and details of the problem.</p>
+    </div>
+
+    <button
+      type="button"
+      class="secondary-button"
+      (click)="cancel()">
+
+      Back
+    </button>
+  </div>
+
+  <form
+    class="form"
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()">
+
+    <div class="field">
+      <label for="category">Category</label>
+
+      <select
+        id="category"
+        formControlName="category">
+
+        <option value="">Select category</option>
+
+        <option
+          *ngFor="let category of categories"
+          [value]="category">
+
+          {{ category }}
+
+        </option>
+      </select>
+
+      <small
+        *ngIf="
+          form.controls.category.touched &&
+          form.controls.category.invalid
+        ">
+
+        Category is required.
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="campus">Campus</label>
+
+      <select
+        id="campus"
+        formControlName="campusId"
+        (change)="onCampusChange()">
+
+        <option value="">Select campus</option>
+
+        <option
+          *ngFor="let campus of campuses"
+          [value]="campus.id">
+
+          {{ campus.name }}
+
+        </option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="building">Building</label>
+
+      <select
+        id="building"
+        formControlName="buildingId"
+        (change)="onBuildingChange()">
+
+        <option value="">Select building</option>
+
+        <option
+          *ngFor="let building of buildings"
+          [value]="building.id">
+
+          {{ building.name }} (Rooms 1-{{ building.rooms }})
+
+        </option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="room">
+        Room Number
+        <span *ngIf="getSelectedBuildingMaxRooms()" class="hint">
+          (Range: 1 - {{ getSelectedBuildingMaxRooms() }})
+        </span>
+      </label>
+
+      <input
+        type="number"
+        id="room"
+        formControlName="room"
+        [min]="1"
+        [max]="getSelectedBuildingMaxRooms() ?? 9999"
+        [placeholder]="getSelectedBuildingMaxRooms() ? 'e.g. 1 to ' + getSelectedBuildingMaxRooms() : 'Select building first'" />
+
+      <small
+        *ngIf="
+          form.controls.room.touched &&
+          form.controls.room.errors?.['required']
+        ">
+        Room number is required.
+      </small>
+
+      <small
+        *ngIf="
+          form.controls.room.touched &&
+          form.controls.room.errors?.['min']
+        ">
+        Room number must be 1 or greater.
+      </small>
+
+      <small
+        *ngIf="
+          form.controls.room.touched &&
+          form.controls.room.errors?.['max']
+        ">
+        Room number cannot exceed {{ getSelectedBuildingMaxRooms() }} for this building.
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="description">Description</label>
+
+      <textarea
+        id="description"
+        rows="6"
+        formControlName="description"
+        placeholder="Describe the issue...">
+      </textarea>
+
+      <small
+        *ngIf="
+          form.controls.description.touched &&
+          form.controls.description.invalid
+        ">
+
+        Please provide a description of the issue (at least 5 characters).
+      </small>
+    </div>
+
+    <div
+      class="error"
+      *ngIf="errorMessage">
+
+      {{ errorMessage }}
+    </div>
+
+    <div class="actions">
+
+      <button
+        type="button"
+        class="secondary-button"
+        (click)="cancel()">
+
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        class="primary-button"
+        [disabled]="submitting">
+
+        {{ submitting ? 'Submitting...' : 'Submit Issue' }}
+
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
