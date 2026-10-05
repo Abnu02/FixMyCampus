@@ -39,9 +39,7 @@ public class AdminTicketService : IAdminTicketService
         if (ticket is null)
             return null;
 
-        if (request.TechnicianID <= 0)
-            throw new ArgumentException(
-                "TechnicianID must be greater than zero.");
+     
 
         if (!_workflowService.CanTransition(
                 ticket.Status,

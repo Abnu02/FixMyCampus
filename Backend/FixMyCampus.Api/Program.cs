@@ -45,6 +45,11 @@ builder.Services.AddScoped<IAdminTicketRepository, AdminTicketRepository>();
 builder.Services.AddScoped<IStatusWorkflowService, StatusWorkflowService>();
 builder.Services.AddScoped<IAdminTicketService, AdminTicketService>();
 
+builder.Services.AddScoped<ITechnicianTicketRepository, TechnicianTicketRepository>();
+builder.Services.AddScoped<ITechnicianTicketService, TechnicianTicketService>();
+
+//
+
 builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();

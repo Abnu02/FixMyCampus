@@ -18,7 +18,7 @@ public class Ticket
 
     public string ReporterId { get; set; } = null!;
 
-    public int? TechnicianID { get; set; } ///?
+   public string? TechnicianID { get; set; }
 
     public TicketStatus Status { get; set; }
 

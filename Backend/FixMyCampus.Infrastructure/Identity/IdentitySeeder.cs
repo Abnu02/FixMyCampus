@@ -10,6 +10,7 @@ public static class IdentitySeeder
     {
         const string reporterRole = "Reporter";
         const string adminRole = "Admin";
+        const string technicianRole = "Technician";
 
         if (!await roleManager.RoleExistsAsync(reporterRole))
         {
@@ -22,6 +23,18 @@ public static class IdentitySeeder
             await roleManager.CreateAsync(
                 new IdentityRole(adminRole));
         }
+
+        if (!await roleManager.RoleExistsAsync(technicianRole))
+        {
+            await roleManager.CreateAsync(
+                new IdentityRole(technicianRole));
+        }
+        await CreateUserAsync(
+            userManager,
+            "teschnician@hackathon.local",
+            "Technician123!",
+            "Demo Technician",
+            technicianRole);
 
         await CreateUserAsync(
             userManager,
