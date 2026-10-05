@@ -10,10 +10,6 @@
   <div class="list-message error-message" *ngIf="errorMessage" role="alert">
     {{ errorMessage }}
   </div>
-  <!-- DEBUG PANEL: always visible to diagnose loading issue -->
-  <div style="background:#1a1a2e;color:#e0e0ff;padding:8px 12px;border-radius:6px;font-size:11px;font-family:monospace;margin-bottom:8px;">
-    🔍 isLoading={{ isLoading }} | tickets={{ tickets.length }} | filtered={{ filteredTickets.length }} | {{ debugInfo || 'initializing...' }}
-  </div>
 
   <!-- Parent Primary Status Filter Bar -->
   <div class="parent-filter-bar">
