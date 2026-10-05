@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { ReporterApiService } from '../services/reporter-api.service';
-import { Campus } from '../models/campus.model';
-import { Building } from '../models/building.model';
-import { ReporterNavComponent } from '../reporter-nav/reporter-nav';
+import { ReporterApiService } from '../../services/reporter-api.service';
+import { Campus } from '../../models/campus.model';
+import { Building } from '../../models/building.model';
+import { ReporterNavComponent } from '../../components/reporter-nav/reporter-nav';
 
 @Component({
   selector: 'app-create-ticket',

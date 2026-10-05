@@ -2,12 +2,12 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { ReporterApiService } from '../services/reporter-api.service';
-import { Campus } from '../models/campus.model';
-import { Building } from '../models/building.model';
-import { TicketListItem } from '../models/ticket.model';
+import { ReporterApiService } from '../../services/reporter-api.service';
+import { Campus } from '../../models/campus.model';
+import { Building } from '../../models/building.model';
+import { TicketListItem } from '../../models/ticket.model';
 import { RouterLink } from '@angular/router';
-import { ReporterNavComponent } from '../reporter-nav/reporter-nav';
+import { ReporterNavComponent } from '../../components/reporter-nav/reporter-nav';
 
 @Component({
   selector: 'app-campus-feed',

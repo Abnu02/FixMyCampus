@@ -2,9 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-import { ReporterApiService } from '../services/reporter-api.service';
-import { TicketListItem } from '../models/ticket.model';
-import { ReporterNavComponent } from '../reporter-nav/reporter-nav';
+import { ReporterApiService } from '../../services/reporter-api.service';
+import { TicketListItem } from '../../models/ticket.model';
+import { ReporterNavComponent } from '../../components/reporter-nav/reporter-nav';
 
 @Component({
   selector: 'app-my-tickets',
