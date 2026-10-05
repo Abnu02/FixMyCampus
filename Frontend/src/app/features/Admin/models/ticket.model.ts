@@ -11,18 +11,26 @@ export interface TicketHistoryItem {
   changedAt: string;
 }
 
-export interface Ticket {
+/**
+ * Matches backend AdminTicketResponse DTO
+ */
+export interface AdminTicketResponse {
   id: number;
   category: string;
-  buildingId: number;
   buildingName: string;
-  campusName: string;
   room: string;
   description: string;
-  technicianType?: string;
-  technicianName?: string | null;
-  status: TicketStatus;
+  technicianID: number | null;
+  status: string;
   createdAt: string;
+}
+
+/**
+ * Extended view model used by components that need history
+ */
+export interface Ticket extends AdminTicketResponse {
+  campusName?: string;
+  technicianName?: string | null;
   history?: TicketHistoryItem[];
 }
 

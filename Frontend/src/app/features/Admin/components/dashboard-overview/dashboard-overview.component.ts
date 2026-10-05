@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Ticket, TicketStatus } from '../../models/ticket.model';
+import { AdminTicketResponse, TicketStatus } from '../../models/ticket.model';
 import { AdminTicketService } from '../../services/admin-ticket.service';
 
 @Component({
@@ -40,7 +40,7 @@ export class DashboardOverviewComponent implements OnInit {
     });
   }
 
-  private updateStats(tickets: Ticket[]): void {
+  private updateStats(tickets: AdminTicketResponse[]): void {
     const resolved = tickets.filter(ticket => ticket.status === TicketStatus.Resolved);
 
     this.stats = {

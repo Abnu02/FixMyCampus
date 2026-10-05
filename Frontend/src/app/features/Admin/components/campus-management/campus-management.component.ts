@@ -13,15 +13,11 @@ export class CampusManagementComponent implements OnInit {
   buildings: Building[] = [];
   selectedCampus: Campus | null = null;
 
-  // Campus Form State
-  isCampusModalOpen = false;
-  isCampusEdit = false;
-  campusForm: { id?: number; name: string; location: string | number } = { name: '', location: '' };
+  isLoading = false;
+  errorMessage = '';
 
-  // Building Form State
-  isBuildingModalOpen = false;
-  isBuildingEdit = false;
-  buildingForm: { id?: number; name: string; maxCapacity: number; campusId: number } = { name: '', maxCapacity: 0, campusId: 0 };
+  // Read-only notice (write endpoints not yet available in backend)
+  readonly isReadOnly = true;
 
   constructor(private campusService: AdminCampusService) {}
 
@@ -31,10 +27,18 @@ export class CampusManagementComponent implements OnInit {
 
   // --- CAMPUS OPERATIONS ---
   loadCampuses(): void {
-    this.campusService.getCampuses().subscribe(data => {
-      this.campuses = data;
-      if (!this.selectedCampus && this.campuses.length > 0) {
-        this.selectCampus(this.campuses[0]);
+    this.isLoading = true;
+    this.campusService.getCampuses().subscribe({
+      next: data => {
+        this.campuses = data;
+        this.isLoading = false;
+        if (!this.selectedCampus && this.campuses.length > 0) {
+          this.selectCampus(this.campuses[0]);
+        }
+      },
+      error: () => {
+        this.errorMessage = 'Campuses could not be loaded.';
+        this.isLoading = false;
       }
     });
   }
@@ -44,121 +48,15 @@ export class CampusManagementComponent implements OnInit {
     this.loadBuildingsForCampus(campus.id);
   }
 
-  openCampusModal(campus?: Campus): void {
-    if (campus) {
-      this.isCampusEdit = true;
-      this.campusForm = { id: campus.id, name: campus.name, location: campus.location };
-    } else {
-      this.isCampusEdit = false;
-      this.campusForm = { name: '', location: '' };
-    }
-    this.isCampusModalOpen = true;
-  }
-
-  closeCampusModal(): void {
-    this.isCampusModalOpen = false;
-  }
-
-  saveCampus(): void {
-    if (!this.campusForm.name || !this.campusForm.location) return;
-
-    if (this.isCampusEdit && this.campusForm.id) {
-      this.campusService.updateCampus(this.campusForm.id, {
-        name: this.campusForm.name,
-        location: this.campusForm.location
-      }).subscribe(() => {
-        this.loadCampuses();
-        this.closeCampusModal();
-      });
-    } else {
-      this.campusService.createCampus({
-        name: this.campusForm.name,
-        location: this.campusForm.location
-      }).subscribe(() => {
-        this.loadCampuses();
-        this.closeCampusModal();
-      });
-    }
-  }
-
-  deleteCampus(id: number): void {
-    if (confirm('Are you sure you want to delete this campus and its buildings?')) {
-      this.campusService.deleteCampus(id).subscribe(() => {
-        if (this.selectedCampus?.id === id) {
-          this.selectedCampus = null;
-          this.buildings = [];
-        }
-        this.loadCampuses();
-      });
-    }
-  }
-
   // --- BUILDING OPERATIONS ---
   loadBuildingsForCampus(campusId: number): void {
-    this.campusService.getBuildings(campusId).subscribe(data => {
-      this.buildings = data;
+    this.campusService.getBuildings(campusId).subscribe({
+      next: data => {
+        this.buildings = data;
+      },
+      error: () => {
+        this.errorMessage = 'Buildings could not be loaded.';
+      }
     });
-  }
-
-  openBuildingModal(building?: Building): void {
-    if (building) {
-      this.isBuildingEdit = true;
-      this.buildingForm = {
-        id: building.id,
-        name: building.name,
-        maxCapacity: building.maxCapacity,
-        campusId: building.campusId
-      };
-    } else {
-      this.isBuildingEdit = false;
-      this.buildingForm = {
-        name: '',
-        maxCapacity: 50,
-        campusId: this.selectedCampus ? this.selectedCampus.id : (this.campuses[0]?.id || 0)
-      };
-    }
-    this.isBuildingModalOpen = true;
-  }
-
-  closeBuildingModal(): void {
-    this.isBuildingModalOpen = false;
-  }
-
-  saveBuilding(): void {
-    if (!this.buildingForm.name || !this.buildingForm.campusId) return;
-
-    if (this.isBuildingEdit && this.buildingForm.id) {
-      this.campusService.updateBuilding(this.buildingForm.id, {
-        name: this.buildingForm.name,
-        maxCapacity: Number(this.buildingForm.maxCapacity),
-        campusId: Number(this.buildingForm.campusId)
-      }).subscribe(() => {
-        if (this.selectedCampus) {
-          this.loadBuildingsForCampus(this.selectedCampus.id);
-        }
-        this.closeBuildingModal();
-      });
-    } else {
-      this.campusService.createBuilding({
-        name: this.buildingForm.name,
-        maxCapacity: Number(this.buildingForm.maxCapacity),
-        campusId: Number(this.buildingForm.campusId)
-      }).subscribe(() => {
-        if (this.selectedCampus) {
-          this.loadBuildingsForCampus(this.selectedCampus.id);
-        }
-        this.closeBuildingModal();
-      });
-    }
-  }
-
-  deleteBuilding(id: number): void {
-    if (confirm('Are you sure you want to delete this building?')) {
-      this.campusService.deleteBuilding(id).subscribe(() => {
-        if (this.selectedCampus) {
-          this.loadBuildingsForCampus(this.selectedCampus.id);
-        }
-      });
-    }
   }
 }

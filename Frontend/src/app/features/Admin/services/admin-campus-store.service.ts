@@ -8,20 +8,20 @@ import { Campus, Building } from '../models/campus.model';
 export class AdminStoreService {
   // 5 Initial Mock Campuses
   private campuses: Campus[] = [
-    { id: 1, name: 'Main Campus', location: 1 },
-    { id: 2, name: 'Technology Campus', location: 2 },
-    { id: 3, name: 'Health Sciences Campus', location: 3 },
-    { id: 4, name: 'Business & Economics Campus', location: 4 },
-    { id: 5, name: 'Agricultural Research Campus', location: 5 }
+    { id: 1, name: 'Main Campus', location: 'Central District' },
+    { id: 2, name: 'Technology Campus', location: 'Tech Park' },
+    { id: 3, name: 'Health Sciences Campus', location: 'Medical District' },
+    { id: 4, name: 'Business & Economics Campus', location: 'Business Hub' },
+    { id: 5, name: 'Agricultural Research Campus', location: 'Rural Outskirts' }
   ];
 
   // 5 Initial Mock Buildings
   private buildings: Building[] = [
-    { id: 1, name: 'Block A', maxCapacity: 120, campusId: 1 },
-    { id: 2, name: 'Engineering Hall', maxCapacity: 250, campusId: 2 },
-    { id: 3, name: 'Medical Lab Tower', maxCapacity: 80, campusId: 3 },
-    { id: 4, name: 'Auditorium Complex', maxCapacity: 500, campusId: 1 },
-    { id: 5, name: 'Finance & Admin Block', maxCapacity: 150, campusId: 4 }
+    { id: 1, name: 'Block A', campusId: 1, campusName: 'Main Campus' },
+    { id: 2, name: 'Engineering Hall', campusId: 2, campusName: 'Technology Campus' },
+    { id: 3, name: 'Medical Lab Tower', campusId: 3, campusName: 'Health Sciences Campus' },
+    { id: 4, name: 'Auditorium Complex', campusId: 1, campusName: 'Main Campus' },
+    { id: 5, name: 'Finance & Admin Block', campusId: 4, campusName: 'Business & Economics Campus' }
   ];
 
   // --- CAMPUS CRUD ---
@@ -71,8 +71,8 @@ export class AdminStoreService {
     const newBuilding: Building = {
       id: this.buildings.length ? Math.max(...this.buildings.map(b => b.id)) + 1 : 1,
       name: building.name,
-      maxCapacity: building.maxCapacity,
-      campusId: building.campusId
+      campusId: building.campusId,
+      campusName: building.campusName
     };
     this.buildings.push(newBuilding);
     return of(newBuilding);

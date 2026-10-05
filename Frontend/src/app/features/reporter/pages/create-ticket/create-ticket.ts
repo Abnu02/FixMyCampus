@@ -40,7 +40,7 @@ export class CreateTicketComponent implements OnInit {
     category: ['', Validators.required],
     campusId: ['', Validators.required],
     buildingId: ['', Validators.required],
-    room: ['', [Validators.required, Validators.min(1)]],
+    room: ['', [Validators.required, Validators.minLength(1)]],
     description: ['', [Validators.required, Validators.minLength(5)]]
   });
 
@@ -86,34 +86,6 @@ export class CreateTicketComponent implements OnInit {
 
   onBuildingChange(): void {
     this.form.controls.room.setValue('');
-    const maxRooms = this.getSelectedBuildingMaxRooms();
-
-    if (maxRooms) {
-      this.form.controls.room.setValidators([
-        Validators.required,
-        Validators.min(1),
-        Validators.max(maxRooms)
-      ]);
-    } else {
-      this.form.controls.room.setValidators([
-        Validators.required,
-        Validators.min(1)
-      ]);
-    }
-    this.form.controls.room.updateValueAndValidity();
-  }
-
-  getSelectedBuilding(): Building | undefined {
-    const buildingId = Number(this.form.controls.buildingId.value);
-    if (!buildingId) {
-      return undefined;
-    }
-    return this.buildings.find(b => b.id === buildingId);
-  }
-
-  getSelectedBuildingMaxRooms(): number | null {
-    const building = this.getSelectedBuilding();
-    return building ? building.rooms : null;
   }
 
   onSubmit(): void {
@@ -128,21 +100,17 @@ export class CreateTicketComponent implements OnInit {
     const request = {
       category: this.form.controls.category.value ?? '',
       buildingId: Number(this.form.controls.buildingId.value),
-      room: Number(this.form.controls.room.value),
+      room: this.form.controls.room.value ?? '',
       description: this.form.controls.description.value ?? ''
     };
 
     this.api.createTicket(request).subscribe({
       next: (ticket) => {
         this.submitting = false;
-
-        this.router.navigate([
-          '/reporter/tickets',
-          ticket.id
-        ]);
+        this.router.navigate(['/reporter/tickets', ticket.id]);
       },
       error: (err) => {
-        this.errorMessage = err?.message || 'Unable to create the ticket.';
+        this.errorMessage = err?.error?.message || 'Unable to create the ticket.';
         this.submitting = false;
       }
     });

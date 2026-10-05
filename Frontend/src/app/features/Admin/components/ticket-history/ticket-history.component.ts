@@ -14,9 +14,7 @@ export class TicketHistoryComponent implements OnInit {
 
   searchTerm = '';
   selectedCategory = 'All';
-  selectedCampus = 'All';
   categories: string[] = [];
-  campuses: string[] = [];
   isLoading = false;
   errorMessage = '';
   detailErrorMessage = '';
@@ -38,7 +36,6 @@ export class TicketHistoryComponent implements OnInit {
       next: (tickets) => {
         this.resolvedTickets = tickets;
         this.categories = this.getUniqueValues(tickets.map(ticket => ticket.category));
-        this.campuses = this.getUniqueValues(tickets.map(ticket => ticket.campusName));
         this.applyFilters();
         this.isLoading = false;
       },
@@ -55,17 +52,14 @@ export class TicketHistoryComponent implements OnInit {
       const matchSearch = !query || [
         t.id.toString(),
         t.category,
-        t.campusName,
         t.buildingName,
         t.room,
-        t.description,
-        t.technicianName ?? ''
+        t.description
       ].some(value => value.toLocaleLowerCase().includes(query));
 
       const matchCategory = this.selectedCategory === 'All' || t.category === this.selectedCategory;
-      const matchCampus = this.selectedCampus === 'All' || t.campusName === this.selectedCampus;
 
-      return matchSearch && matchCategory && matchCampus;
+      return matchSearch && matchCategory;
     });
   }
 

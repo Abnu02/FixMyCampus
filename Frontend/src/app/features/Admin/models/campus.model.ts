@@ -1,12 +1,14 @@
+/** Matches backend CampusResponseDto */
 export interface Campus {
   id: number;
   name: string;
-  location: string | number;
+  location: string;
 }
 
+/** Matches backend BuildingResponseDto */
 export interface Building {
   id: number;
   name: string;
-  maxCapacity: number;
   campusId: number;
+  campusName: string;
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Ticket, TicketStatus, TechnicianCategory } from '../../models/ticket.model';
+import { Ticket, TicketStatus } from '../../models/ticket.model';
 import { AdminTicketService } from '../../services/admin-ticket.service';
 
 @Component({
@@ -11,15 +11,12 @@ import { AdminTicketService } from '../../services/admin-ticket.service';
 export class TicketListComponent implements OnInit {
   tickets: Ticket[] = [];
   filteredTickets: Ticket[] = [];
-  technicianCategories: TechnicianCategory[] = [];
   categories: string[] = [];
-  campuses: string[] = [];
   buildings: string[] = [];
-  readonly statuses: TicketStatus[] = Object.values(TicketStatus);
+  readonly statuses: TicketStatus[] = Object.values(TicketStatus) as TicketStatus[];
 
   selectedStatus: TicketStatus | 'All' = 'All';
   selectedCategory: string = 'All';
-  selectedCampus: string = 'All';
   selectedBuilding: string = 'All';
   searchQuery = '';
   isLoading = false;
@@ -30,10 +27,8 @@ export class TicketListComponent implements OnInit {
   selectedTicket: Ticket | null = null;
   isDetailModalOpen = false;
 
-  // Assignment Cascading Form State
-  assignTechnicianType = '';
-  assignTechnicianName = '';
-  availableTechnicians: string[] = [];
+  // Assignment Form State — uses technicianId (int) to match backend
+  assignTechnicianId: number | null = null;
 
   constructor(private adminTicketService: AdminTicketService) {}
 
@@ -48,7 +43,6 @@ export class TicketListComponent implements OnInit {
       next: (data) => {
         this.tickets = data;
         this.categories = this.getUniqueValues(data.map(ticket => ticket.category));
-        this.campuses = this.getUniqueValues(data.map(ticket => ticket.campusName));
         this.buildings = this.getUniqueValues(data.map(ticket => ticket.buildingName));
         this.applyFilters();
         this.isLoading = false;
@@ -58,34 +52,22 @@ export class TicketListComponent implements OnInit {
         this.isLoading = false;
       }
     });
-
-    this.adminTicketService.getTechnicianCategories().subscribe({
-      next: (categories) => {
-        this.technicianCategories = categories;
-      },
-      error: () => {
-        this.errorMessage = 'Technician options could not be loaded.';
-      }
-    });
   }
 
   applyFilters(): void {
     this.filteredTickets = this.tickets.filter(t => {
       const matchStatus = this.selectedStatus === 'All' || t.status === this.selectedStatus;
       const matchCategory = this.selectedCategory === 'All' || t.category === this.selectedCategory;
-      const matchCampus = this.selectedCampus === 'All' || t.campusName === this.selectedCampus;
       const matchBuilding = this.selectedBuilding === 'All' || t.buildingName === this.selectedBuilding;
       const query = this.searchQuery.trim().toLocaleLowerCase();
       const matchSearch = !query || [
         t.id.toString(),
         t.category,
-        t.campusName,
         t.buildingName,
         t.room,
-        t.description,
-        t.technicianName ?? ''
+        t.description
       ].some(value => value.toLocaleLowerCase().includes(query));
-      return matchStatus && matchCategory && matchCampus && matchBuilding && matchSearch;
+      return matchStatus && matchCategory && matchBuilding && matchSearch;
     });
   }
 
@@ -99,9 +81,7 @@ export class TicketListComponent implements OnInit {
     this.adminTicketService.getTicketById(ticket.id).subscribe({
       next: (detail) => {
         this.selectedTicket = detail ?? ticket;
-        this.assignTechnicianType = this.selectedTicket.technicianType ?? '';
-        this.assignTechnicianName = this.selectedTicket.technicianName ?? '';
-        this.updateAvailableTechnicians(false);
+        this.assignTechnicianId = this.selectedTicket.technicianID ?? null;
         this.isDetailModalOpen = true;
       },
       error: () => {
@@ -113,21 +93,7 @@ export class TicketListComponent implements OnInit {
   closeDetailModal(): void {
     this.isDetailModalOpen = false;
     this.selectedTicket = null;
-    this.assignTechnicianType = '';
-    this.assignTechnicianName = '';
-    this.availableTechnicians = [];
-  }
-
-  onTechnicianTypeChange(): void {
-    this.updateAvailableTechnicians(true);
-  }
-
-  private updateAvailableTechnicians(clearSelection: boolean): void {
-    const found = this.technicianCategories.find(category => category.type === this.assignTechnicianType);
-    this.availableTechnicians = found?.technicians ?? [];
-    if (clearSelection || !this.availableTechnicians.includes(this.assignTechnicianName)) {
-      this.assignTechnicianName = '';
-    }
+    this.assignTechnicianId = null;
   }
 
   private getUniqueValues(values: string[]): string[] {
@@ -142,38 +108,33 @@ export class TicketListComponent implements OnInit {
     return ticket.id;
   }
 
-  trackTechnicianCategory(_index: number, category: TechnicianCategory): string {
-    return category.type;
-  }
-
   trackByValue(_index: number, value: string): string {
     return value;
   }
 
   submitAssignment(): void {
-    if (!this.selectedTicket || !this.assignTechnicianType || !this.assignTechnicianName || this.isAssigning) {
+    if (!this.selectedTicket || !this.assignTechnicianId || this.isAssigning) {
       return;
     }
 
     this.isAssigning = true;
     this.errorMessage = '';
     this.adminTicketService
-      .assignTechnician(this.selectedTicket.id, this.assignTechnicianType, this.assignTechnicianName)
+      .assignTechnician(this.selectedTicket.id, this.assignTechnicianId)
       .subscribe({
-        next: (updated) => {
-          this.selectedTicket = updated;
+        next: () => {
           this.isAssigning = false;
           this.closeDetailModal();
           this.loadData();
         },
-        error: () => {
-          this.errorMessage = 'Technician assignment failed. Please try again.';
+        error: (err) => {
+          this.errorMessage = err?.error?.message || 'Technician assignment failed. Please try again.';
           this.isAssigning = false;
         }
       });
   }
 
-  getStatusBadgeClass(status: TicketStatus): string {
+  getStatusBadgeClass(status: string): string {
     switch (status) {
       case TicketStatus.New: return 'badge-new';
       case TicketStatus.Assigned: return 'badge-assigned';
@@ -183,7 +144,7 @@ export class TicketListComponent implements OnInit {
     }
   }
 
-  getStatusDotClass(status: TicketStatus): string {
+  getStatusDotClass(status: string): string {
     switch (status) {
       case TicketStatus.New: return 'dot-new';
       case TicketStatus.Assigned: return 'dot-assigned';

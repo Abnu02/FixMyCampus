@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register(
-        RegisterRequest request)
+        [FromBody] RegisterRequest request)
     {
         try
         {
@@ -35,7 +35,7 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(
-        LoginRequest request)
+        [FromBody] LoginRequest request)
     {
         try
         {

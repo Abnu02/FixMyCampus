@@ -1,10 +1,9 @@
 export interface TicketListItem {
   id: number;
   category: string;
-  buildingId: number;
   buildingName: string;
   campusName: string;
-  room: number;
+  room: string;
   status: string;
   createdAt: string;
 }
@@ -12,12 +11,11 @@ export interface TicketListItem {
 export interface TicketDetails {
   id: number;
   category: string;
-  buildingId: number;
   buildingName: string;
   campusName: string;
-  room: number;
+  room: string;
   description: string;
-  technicianName: string | null;
+  technicianId: number | null;
   status: string;
   createdAt: string;
   history: TicketHistoryItem[];
@@ -32,6 +30,6 @@ export interface TicketHistoryItem {
 export interface CreateTicketRequest {
   category: string;
   buildingId: number;
-  room: number;
+  room: string;
   description: string;
 }
