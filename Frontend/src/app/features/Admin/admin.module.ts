@@ -8,6 +8,7 @@ import { DashboardOverviewComponent } from './components/dashboard-overview/dash
 import { TicketListComponent } from './components/ticket-list/ticket-list.component';
 import { TicketHistoryComponent } from './components/ticket-history/ticket-history.component';
 import { CampusManagementComponent } from './components/campus-management/campus-management.component';
+import { TechnicianManagementComponent } from './components/technician-management/technician-management.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { CampusManagementComponent } from './components/campus-management/campus
     DashboardOverviewComponent,
     TicketListComponent,
     TicketHistoryComponent,
-    CampusManagementComponent
+    CampusManagementComponent,
+    TechnicianManagementComponent
   ],
   imports: [
     CommonModule,

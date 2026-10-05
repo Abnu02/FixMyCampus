@@ -1,0 +1,125 @@
+<div class="tech-container">
+  <div class="header-section">
+    <div>
+      <h2 class="section-title">Technician Management</h2>
+      <p class="section-subtitle">Manage technician accounts, categories, and active status.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()">+ Add Technician</button>
+  </div>
+
+  <div class="status-error" *ngIf="statusErrorMessage" role="alert">
+    {{ statusErrorMessage }}
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-card">
+    <div class="search-box">
+      <label>Search</label>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="applyFilter()" 
+        placeholder="Search by name or email..." 
+        class="filter-input" 
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Filter Category</label>
+      <select [(ngModel)]="selectedCategory" (change)="applyFilter()" class="filter-select">
+        <option value="All">All Categories</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tech of filteredTechnicians">
+          <td class="font-bold">#{{ tech.id }}</td>
+          <td><strong>{{ tech.firstName }} {{ tech.lastName }}</strong></td>
+          <td>{{ tech.email }}</td>
+          <td><span class="category-badge">{{ tech.category }}</span></td>
+          <td>
+            <span class="status-pill" [class.active]="tech.isActive" [class.inactive]="!tech.isActive">
+              {{ tech.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="text-right">
+            <button class="btn-action edit" (click)="openModal(tech)">Edit</button>
+            <button 
+              class="btn-action toggle" 
+              [class.deactivate]="tech.isActive" 
+              [class.activate]="!tech.isActive"
+              [disabled]="pendingStatusIds.has(tech.id)"
+              (click)="toggleStatus(tech)">
+              {{ pendingStatusIds.has(tech.id) ? 'Updating...' : (tech.isActive ? 'Deactivate' : 'Activate') }}
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredTechnicians.length === 0">
+          <td colspan="6" class="empty-msg">No technicians found matching the selected criteria.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Form -->
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Edit Technician' : 'Register New Technician' }}</h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" [(ngModel)]="techForm.firstName" class="form-control" placeholder="John" />
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" [(ngModel)]="techForm.lastName" class="form-control" placeholder="Doe" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" [(ngModel)]="techForm.email" class="form-control" placeholder="tech@university.edu" />
+      </div>
+
+      <div class="form-group">
+        <label>Password {{ isEditMode ? '(Leave blank to keep current)' : '' }}</label>
+        <input type="password" [(ngModel)]="techForm.password" class="form-control" placeholder="••••••••" />
+      </div>
+
+      <div class="form-group">
+        <label>Category Specialty</label>
+        <select [(ngModel)]="techForm.category" class="form-control">
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-light" (click)="closeModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveTechnician()">
+        {{ isEditMode ? 'Update Technician' : 'Create Account' }}
+      </button>
+    </div>
+  </div>
+</div>

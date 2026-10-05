@@ -5,6 +5,7 @@ import { DashboardOverviewComponent } from './components/dashboard-overview/dash
 import { TicketListComponent } from './components/ticket-list/ticket-list.component';
 import { TicketHistoryComponent } from './components/ticket-history/ticket-history.component';
 import { CampusManagementComponent } from './components/campus-management/campus-management.component';
+import { TechnicianManagementComponent } from './components/technician-management/technician-management.component';
 
 const routes: Routes = [
   {
@@ -15,7 +16,8 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardOverviewComponent },
       { path: 'tickets', component: TicketListComponent },
       { path: 'ticket-history', component: TicketHistoryComponent },
-      { path: 'campus', component: CampusManagementComponent }
+      { path: 'campus', component: CampusManagementComponent },
+      { path: 'technicians', component: TechnicianManagementComponent }
     ]
   }
 ];
