@@ -3,6 +3,7 @@ using System;
 using FixMyCampus.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FixMyCampus.Infrastructure.Migrations
 {
     [DbContext(typeof(FixMyCampusDbContext))]
-    partial class FixMyCampusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005104748_AddFixMyCampusDomain")]
+    partial class AddFixMyCampusDomain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,9 +39,6 @@ namespace FixMyCampus.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("maxCapacity")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

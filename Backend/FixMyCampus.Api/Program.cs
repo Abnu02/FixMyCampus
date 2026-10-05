@@ -39,15 +39,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
-
 builder.Services.AddIdentityServices();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-using (
-    var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var userManager =
         scope.ServiceProvider
@@ -60,6 +58,9 @@ using (
     await IdentitySeeder.SeedAsync(
         userManager,
         roleManager);
+
+    var dbContext = scope.ServiceProvider.GetRequiredService<FixMyCampusDbContext>();
+    await CampusSeeder.SeedAsync(dbContext);
 }
 
 app.UseHttpsRedirection();
