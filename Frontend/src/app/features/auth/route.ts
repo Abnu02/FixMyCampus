@@ -5,31 +5,26 @@ export const authRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login'
+    redirectTo: 'login',
   },
   {
     path: 'login',
-    loadComponent: () =>
-      import('./login/login').then((m) => m.LoginComponent)
+    loadComponent: () => import('./login/login').then((m) => m.LoginComponent),
   },
   {
     path: 'register',
-    loadComponent: () =>
-      import('./register/register').then((m) => m.RegisterComponent)
+    loadComponent: () => import('./register/register').then((m) => m.RegisterComponent),
   },
   {
     path: 'feed',
     canActivate: [authGuard],
-    loadComponent: () =>
-           import('./auth-success/auth-success')
-      .then(m => m.AuthSuccess)
+    loadComponent: () => import('./auth-success/auth-success').then((m) => m.AuthSuccess),
   },
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard(['Admin'])],
     loadComponent: () =>
       // Points to LoginComponent as a temporary placeholder until your teammate finishes the Admin component
-      import('./auth-success/auth-success')
-      .then(m => m.AuthSuccess)
-  }
+      import('./auth-success/auth-success').then((m) => m.AuthSuccess),
+  },
 ];

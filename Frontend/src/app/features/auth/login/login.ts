@@ -31,7 +31,6 @@ export class LoginComponent {
       password: 'User123!'
     });
   }
-
   fillAdminDemo(): void {
     this.loginForm.patchValue({
       email: 'admin@hackathon.local',
@@ -72,6 +71,8 @@ export class LoginComponent {
   private navigateByRole(role: string): void {
     if (role === 'Admin') {
       this.router.navigate(['/admin']);
+    } else if (role === 'Technician') {
+      this.router.navigate(['/technician']);
     } else {
       this.router.navigate(['/feed']);
     }

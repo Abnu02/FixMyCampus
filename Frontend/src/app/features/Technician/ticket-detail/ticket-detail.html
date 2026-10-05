@@ -1,0 +1,53 @@
+<main class="ticket-detail">
+  <a routerLink="/technician" class="back-link"> ← Back to Assigned Tickets </a>
+
+  @if (ticket) {
+    <div class="detail-header">
+      <div>
+        <p class="ticket-number">Ticket #{{ ticket.id }}</p>
+        <h1>{{ ticket.category }}</h1>
+      </div>
+
+      <span class="status">
+        {{ ticket.status }}
+      </span>
+    </div>
+
+    <section class="details-card">
+      <div class="detail-item">
+        <span>Building</span>
+        <strong>{{ ticket.buildingId }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Room</span>
+        <strong>{{ ticket.room }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Created</span>
+        <strong>{{ ticket.createdAt }}</strong>
+      </div>
+    </section>
+
+    <section class="description-card">
+      <h2>Description</h2>
+
+      <p>{{ ticket.description }}</p>
+    </section>
+
+    <div class="ticket-actions">
+      @if (ticket?.status === 'Assigned') {
+        <button class="accept-btn" (click)="acceptTicket()">Accept Ticket</button>
+      }
+
+      @if (ticket?.status === 'In Progress') {
+        <button class="resolve-btn" (click)="markAsResolved()">Mark as Resolved</button>
+      }
+
+      @if (ticket?.status === 'Resolved') {
+        <span class="completed"> ✓ Ticket Resolved </span>
+      }
+    </div>
+  }
+</main>
