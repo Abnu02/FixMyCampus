@@ -272,9 +272,51 @@
 }
 
 .btn-assign:disabled { background: #93c5fd; cursor: not-allowed; }
+.btn-assign:hover:not(:disabled) { background: #1d4ed8; }
+
+/* Status-change button — violet to distinguish from assign (blue) */
+.btn-status-change {
+  background: #7c3aed;
+}
+.btn-status-change:hover:not(:disabled) { background: #6d28d9; }
+.btn-status-change:disabled { background: #c4b5fd; cursor: not-allowed; }
+
+/* Status-change box uses a violet tint */
+.modal-section.assign-box:first-of-type {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+.modal-section.assign-box:first-of-type .assign-title {
+  color: #5b21b6;
+}
+.modal-section.assign-box:first-of-type .form-group label {
+  color: #4c1d95;
+}
+
+/* Make modal body scrollable so both panels fit */
+.modal-body {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* Filter input inside modal */
+.filter-input {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 0.85rem;
+  outline: none;
+  background-color: #fff;
+  width: 100%;
+}
+.filter-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
 
 /* Timeline */
 .timeline { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .timeline-item { display: flex; gap: 10px; font-size: 0.8rem; }
 .timeline-marker { width: 8px; height: 8px; background: #2563eb; border-radius: 50%; margin-top: 4px; }
-.timeline-time { font-size: 0.72rem; color: #94a3b8; }
+.timeline-time { font-size: 0.72rem; color: #94a3b8; }
