@@ -1,0 +1,125 @@
+<div class="management-container">
+  <!-- Left Side: Campus List -->
+  <div class="panel campus-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Campuses</h3>
+        <p class="panel-sub">Select campus to view/manage buildings</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCampusModal()">+ Add Campus</button>
+    </div>
+
+    <div class="campus-list">
+      <div 
+        *ngFor="let campus of campuses" 
+        class="campus-card" 
+        [class.active]="selectedCampus?.id === campus.id"
+        (click)="selectCampus(campus)">
+        <div class="campus-info">
+          <span class="campus-name">{{ campus.name }}</span>
+          <span class="campus-loc">Location ID/Name: {{ campus.location }}</span>
+        </div>
+        <div class="card-actions" (click)="$event.stopPropagation()">
+          <button class="icon-btn" (click)="openCampusModal(campus)">✏️</button>
+          <button class="icon-btn danger" (click)="deleteCampus(campus.id)">🗑️</button>
+        </div>
+      </div>
+
+      <div *ngIf="campuses.length === 0" class="empty-msg">No campuses registered yet.</div>
+    </div>
+  </div>
+
+  <!-- Right Side: Buildings Panel -->
+  <div class="panel building-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Buildings {{ selectedCampus ? 'in ' + selectedCampus.name : '' }}</h3>
+        <p class="panel-sub">Manage blocks and room capacity for the active campus</p>
+      </div>
+      <button class="btn btn-secondary" [disabled]="!selectedCampus" (click)="openBuildingModal()">+ Add Building</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Building Name</th>
+            <th>Max Capacity</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let building of buildings">
+            <td class="font-bold">#{{ building.id }}</td>
+            <td>{{ building.name }}</td>
+            <td><span class="capacity-tag">{{ building.maxCapacity }} Seats</span></td>
+            <td class="text-right">
+              <button class="btn-sm" (click)="openBuildingModal(building)">Edit</button>
+              <button class="btn-sm danger" (click)="deleteBuilding(building.id)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="buildings.length === 0">
+            <td colspan="4" class="empty-msg">No buildings found for this campus.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Campus Modal -->
+<div class="modal-backdrop" *ngIf="isCampusModalOpen" (click)="closeCampusModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4>{{ isCampusEdit ? 'Edit Campus' : 'Create New Campus' }}</h4>
+      <button class="close-btn" (click)="closeCampusModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Campus Name</label>
+        <input type="text" [(ngModel)]="campusForm.name" placeholder="e.g. Block A / Main Campus" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>Location (ID or Name)</label>
+        <input type="text" [(ngModel)]="campusForm.location" placeholder="e.g. 1 or Central Zone" class="form-control" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-light" (click)="closeCampusModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveCampus()">Save Campus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Building Modal -->
+<div class="modal-backdrop" *ngIf="isBuildingModalOpen" (click)="closeBuildingModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4>{{ isBuildingEdit ? 'Edit Building' : 'Create Building' }}</h4>
+      <button class="close-btn" (click)="closeBuildingModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Select Campus</label>
+        <select [(ngModel)]="buildingForm.campusId" class="form-control">
+          <option *ngFor="let c of campuses" [value]="c.id">{{ c.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Building Name</label>
+        <input type="text" [(ngModel)]="buildingForm.name" placeholder="e.g. Block A" class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label>Max Room Capacity</label>
+        <input type="number" [(ngModel)]="buildingForm.maxCapacity" placeholder="e.g. 100" class="form-control" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-light" (click)="closeBuildingModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveBuilding()">Save Building</button>
+    </div>
+  </div>
+</div>
