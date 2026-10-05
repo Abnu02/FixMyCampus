@@ -5,6 +5,12 @@ export enum TicketStatus {
   Resolved = 'Resolved'
 }
 
+export interface TicketHistoryItem {
+  fromStatus: string | null;
+  toStatus: string;
+  changedAt: string;
+}
+
 export interface Ticket {
   id: number;
   category: string;
@@ -13,14 +19,18 @@ export interface Ticket {
   campusName: string;
   room: string;
   description: string;
-  technicianName?: string;
+  technicianType?: string;
+  technicianName?: string | null;
   status: TicketStatus;
   createdAt: string;
+  history?: TicketHistoryItem[];
 }
 
-export interface TicketStatSummary {
-  totalActive: number;
-  needsTechnician: number;
-  underRepair: number;
-  resolved: number;
+export interface ResolvedTicket extends Ticket {
+  resolvedAt: string | null;
+}
+
+export interface TechnicianCategory {
+  type: string;
+  technicians: string[];
 }

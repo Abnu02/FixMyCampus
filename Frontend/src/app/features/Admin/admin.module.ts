@@ -1,21 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminLayoutComponent } from './pages/admin-layout/admin-layout.component';
 import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
+import { TicketListComponent } from './components/ticket-list/ticket-list.component';
+import { TicketHistoryComponent } from './components/ticket-history/ticket-history.component';
 
 @NgModule({
   declarations: [
     AdminLayoutComponent,
-    DashboardOverviewComponent
+    DashboardOverviewComponent,
+    TicketListComponent,
+    TicketHistoryComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule,
     AdminRoutingModule
   ]
 })

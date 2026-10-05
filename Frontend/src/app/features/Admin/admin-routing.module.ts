@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminLayoutComponent } from './pages/admin-layout/admin-layout.component';
 import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
+import { TicketListComponent } from './components/ticket-list/ticket-list.component';
+import { TicketHistoryComponent } from './components/ticket-history/ticket-history.component';
 
 const routes: Routes = [
   {
@@ -10,10 +12,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardOverviewComponent },
-      // Sub-routes for future steps:
-      // { path: 'tickets', component: TicketListComponent },
-      // { path: 'ticket-history', component: TicketHistoryComponent },
-      // { path: 'campus', component: CampusManagementComponent }
+      { path: 'tickets', component: TicketListComponent },
+      { path: 'ticket-history', component: TicketHistoryComponent }
     ]
   }
 ];

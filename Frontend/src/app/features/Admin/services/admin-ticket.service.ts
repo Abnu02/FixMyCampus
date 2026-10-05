@@ -1,28 +1,87 @@
-// import { Injectable } from '@angular/core';
-// import { HttpClient, HttpParams } from '@angular/common/http';
-// import { Observable } from 'rxjs';
-// import { Ticket, TicketStatSummary } from '../models/ticket.model';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ResolvedTicket, Ticket, TechnicianCategory } from '../models/ticket.model';
+import { AdminStoreService } from './admin-store.service';
 
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AdminTicketService {
-//   private apiUrl = '/api/v1/admin/tickets';
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminTicketService {
+  // Flag to toggle between local mock store and backend API endpoints
+  private useMock = true;
 
-//   constructor(private http: HttpClient) {}
+  // Base API URL provided by backend team
+  private readonly baseUrl = '/api/v1';
 
-//   getTickets(filters?: { status?: string; buildingId?: number; category?: string }): Observable<Ticket[]> {
-//     let params = new HttpParams();
-//     if (filters?.status) params = params.set('status', filters.status);
-//     if (filters?.buildingId) params = params.set('buildingId', filters.buildingId.toString());
-//     return this.http.get<Ticket[]>(this.apiUrl, { params });
-//   }
+  constructor(
+    private http: HttpClient,
+    private adminStore: AdminStoreService
+  ) {}
 
-//   assignTechnician(ticketId: number, technicianName: string): Observable<Ticket> {
-//     return this.http.patch<Ticket>(`${this.apiUrl}/${ticketId}/assign`, { technicianName });
-//   }
+  /**
+   * Fetch all tickets
+   * Endpoint: GET /api/v1/tickets
+   */
+  getTickets(): Observable<Ticket[]> {
+    if (this.useMock) {
+      return this.adminStore.getTickets();
+    }
+    return this.http.get<Ticket[]>(`${this.baseUrl}/tickets`);
+  }
 
-//   updateStatus(ticketId: number, status: string): Observable<Ticket> {
-//     return this.http.patch<Ticket>(`${this.apiUrl}/${ticketId}/status`, { status });
-//   }
-// }
+  /**
+   * Fetch resolved ticket history with resolved timestamps
+   * Endpoint: GET /api/v1/tickets/history/resolved
+   */
+  getResolvedTickets(): Observable<ResolvedTicket[]> {
+    if (this.useMock) {
+      return this.adminStore.getResolvedTickets();
+    }
+    return this.http.get<ResolvedTicket[]>(`${this.baseUrl}/tickets/history/resolved`);
+  }
+
+  /**
+   * Fetch single ticket details by ID with history
+   * Endpoint: GET /api/v1/tickets/{id}
+   */
+  getTicketById(id: number): Observable<Ticket | undefined> {
+    if (this.useMock) {
+      return this.adminStore.getTicketById(id);
+    }
+    return this.http.get<Ticket>(`${this.baseUrl}/tickets/${id}`);
+  }
+
+  /**
+   * Fetch available technician types and their grouped technicians
+   * Endpoint: GET /api/v1/technicians/categories
+   */
+  getTechnicianCategories(): Observable<TechnicianCategory[]> {
+    if (this.useMock) {
+      return this.adminStore.getTechnicianCategories();
+    }
+    return this.http.get<TechnicianCategory[]>(`${this.baseUrl}/technicians/categories`);
+  }
+
+  /**
+   * Assign a technician to a ticket (updates status to 'Assigned')
+   * Endpoint: PUT /api/v1/tickets/{id}/assign
+   */
+  assignTechnician(
+    ticketId: number, 
+    technicianType: string, 
+    technicianName: string
+  ): Observable<Ticket> {
+    if (this.useMock) {
+      return this.adminStore.assignTechnician(ticketId, technicianType, technicianName);
+    }
+    
+    const payload = {
+      technicianType,
+      technicianName,
+      status: 'Assigned'
+    };
+    
+    return this.http.put<Ticket>(`${this.baseUrl}/tickets/${ticketId}/assign`, payload);
+  }
+}
