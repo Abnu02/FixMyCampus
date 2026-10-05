@@ -11,10 +11,22 @@ using FixMyCampus.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var isPlaceholderConnection = string.IsNullOrWhiteSpace(connectionString)
+    || connectionString.Contains("******", StringComparison.Ordinal)
+    || connectionString.Contains("change-me", StringComparison.OrdinalIgnoreCase);
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddDbContext<FixMyCampusDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (isPlaceholderConnection)
+    {
+        options.UseInMemoryDatabase("FixMyCampusDb");
+        return;
+    }
+
+    options.UseNpgsql(connectionString);
+});
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -55,9 +67,11 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 app.UseCors("Frontend");
-using (
-    var scope = app.Services.CreateScope())
+
+try
 {
+    using var scope = app.Services.CreateScope();
+
     var userManager =
         scope.ServiceProvider
             .GetRequiredService<UserManager<ApplicationUser>>();
@@ -69,6 +83,10 @@ using (
     await IdentitySeeder.SeedAsync(
         userManager,
         roleManager);
+}
+catch (Exception ex)
+{
+    app.Logger.LogWarning(ex, "Database seeding could not complete. Starting with an in-memory database fallback if configured.");
 }
 
 app.UseHttpsRedirection();
