@@ -33,7 +33,16 @@ builder.Services
                 Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
         };
     });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -45,7 +54,7 @@ builder.Services.AddIdentityServices();
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
+app.UseCors("Frontend");
 using (
     var scope = app.Services.CreateScope())
 {

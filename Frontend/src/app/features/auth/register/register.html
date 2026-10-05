@@ -1,9 +1,8 @@
 <div class="auth-page">
   <div class="auth-card">
-
     <div class="brand">
       <div class="brand-mark">
-        <span class="material-symbols-outlined">person_add</span>
+        <span class="material-symbols-outlined text-on-primary text-[20px]">campaign</span>
       </div>
       <div>
         <h1>FixMyCampus</h1>
@@ -31,7 +30,6 @@
     }
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-
       <!-- Display Name / Full Name -->
       <div class="form-group">
         <label for="reg-name">Full Name</label>
@@ -45,7 +43,9 @@
             autocomplete="name"
           />
         </div>
-        @if (registerForm.controls.displayName.touched && registerForm.controls.displayName.invalid) {
+        @if (
+          registerForm.controls.displayName.touched && registerForm.controls.displayName.invalid
+        ) {
           <small class="field-error">Please provide your full name.</small>
         }
       </div>
@@ -99,9 +99,15 @@
             autocomplete="new-password"
           />
         </div>
-        @if (registerForm.controls.confirmPassword.touched && registerForm.controls.confirmPassword.hasError('required')) {
+        @if (
+          registerForm.controls.confirmPassword.touched &&
+          registerForm.controls.confirmPassword.hasError('required')
+        ) {
           <small class="field-error">Please confirm your password.</small>
-        } @else if (registerForm.hasError('passwordMismatch') && (registerForm.controls.confirmPassword.touched || registerForm.controls.password.touched)) {
+        } @else if (
+          registerForm.hasError('passwordMismatch') &&
+          (registerForm.controls.confirmPassword.touched || registerForm.controls.password.touched)
+        ) {
           <small class="field-error">Passwords do not match.</small>
         }
       </div>
@@ -114,13 +120,11 @@
           <span class="material-symbols-outlined">arrow_forward</span>
         }
       </button>
-
     </form>
 
     <div class="register-link">
       <span>Already have an account?</span>
       <a routerLink="/login">Sign in</a>
     </div>
-
   </div>
 </div>

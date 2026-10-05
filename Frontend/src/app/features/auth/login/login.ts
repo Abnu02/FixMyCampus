@@ -38,6 +38,12 @@ export class LoginComponent {
       password: 'Admin123!'
     });
   }
+  fillTecnicianDemo(): void {
+    this.loginForm.patchValue({
+      email: 'teschnician@hackathon.local',
+      password: 'Technician123!'
+    });
+  }
 
   onSubmit(): void {
     this.errorMessage = '';

@@ -1,9 +1,8 @@
 <div class="auth-page">
   <div class="auth-card">
-
     <div class="brand">
       <div class="brand-mark">
-        <span class="material-symbols-outlined">build_circle</span>
+        <span class="material-symbols-outlined text-on-primary text-[20px]">campaign</span>
       </div>
       <div>
         <h1>FixMyCampus</h1>
@@ -20,6 +19,7 @@
     <div class="demo-bar">
       <span>Demo Autofill:</span>
       <button type="button" class="btn-demo" (click)="fillReporterDemo()">Student Demo</button>
+      <button type="button" class="btn-demo" (click)="fillTecnicianDemo()">Technician Demo</button>
       <button type="button" class="btn-demo" (click)="fillAdminDemo()">Admin Demo</button>
     </div>
 
@@ -31,7 +31,6 @@
     }
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      
       <div class="form-group">
         <label for="email">Campus Email</label>
         <div class="input-wrapper">
@@ -74,13 +73,11 @@
           <span class="material-symbols-outlined">arrow_forward</span>
         }
       </button>
-
     </form>
 
     <div class="register-link">
       <span>Don't have an account?</span>
       <a routerLink="/register">Create an account</a>
     </div>
-
   </div>
 </div>
