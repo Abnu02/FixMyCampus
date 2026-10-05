@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 using FixMyCampus.Application.Auth;
+using FixMyCampus.Application.Interfaces;
 using FixMyCampus.Infrastructure.Data;
 using FixMyCampus.Infrastructure.Identity;
+using FixMyCampus.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddIdentityServices();
+
+builder.Services.AddScoped<ICampusService, CampusService>();
+builder.Services.AddScoped<IBuildingService, BuildingService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddControllers();
 
