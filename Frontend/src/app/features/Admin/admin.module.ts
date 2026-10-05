@@ -7,13 +7,15 @@ import { AdminLayoutComponent } from './pages/admin-layout/admin-layout.componen
 import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
 import { TicketListComponent } from './components/ticket-list/ticket-list.component';
 import { TicketHistoryComponent } from './components/ticket-history/ticket-history.component';
+import { CampusManagementComponent } from './components/campus-management/campus-management.component';
 
 @NgModule({
   declarations: [
     AdminLayoutComponent,
     DashboardOverviewComponent,
     TicketListComponent,
-    TicketHistoryComponent
+    TicketHistoryComponent,
+    CampusManagementComponent
   ],
   imports: [
     CommonModule,

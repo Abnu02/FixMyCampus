@@ -4,6 +4,7 @@ import { AdminLayoutComponent } from './pages/admin-layout/admin-layout.componen
 import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
 import { TicketListComponent } from './components/ticket-list/ticket-list.component';
 import { TicketHistoryComponent } from './components/ticket-history/ticket-history.component';
+import { CampusManagementComponent } from './components/campus-management/campus-management.component';
 
 const routes: Routes = [
   {
@@ -13,7 +14,8 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardOverviewComponent },
       { path: 'tickets', component: TicketListComponent },
-      { path: 'ticket-history', component: TicketHistoryComponent }
+      { path: 'ticket-history', component: TicketHistoryComponent },
+      { path: 'campus', component: CampusManagementComponent }
     ]
   }
 ];
