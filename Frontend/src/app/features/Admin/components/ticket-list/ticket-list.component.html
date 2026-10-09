@@ -1,0 +1,195 @@
+<div class="tickets-container">
+  <!-- Page Header -->
+  <div class="header-section">
+    <div>
+      <h2 class="section-title">Campus Maintenance Tickets</h2>
+      <p class="section-subtitle">Review incoming issues, filter by facilities, and assign qualified technicians.</p>
+    </div>
+  </div>
+
+  <div class="list-message error-message" *ngIf="errorMessage" role="alert">
+    {{ errorMessage }}
+  </div>
+  <!-- DEBUG PANEL: always visible to diagnose loading issue -->
+  <div style="background:#1a1a2e;color:#e0e0ff;padding:8px 12px;border-radius:6px;font-size:11px;font-family:monospace;margin-bottom:8px;">
+    🔍 isLoading={{ isLoading }} | tickets={{ tickets.length }} | filtered={{ filteredTickets.length }} | {{ debugInfo || 'initializing...' }}
+  </div>
+
+  <!-- Parent Primary Status Filter Bar -->
+  <div class="parent-filter-bar">
+    <span class="parent-label">Filter by Status:</span>
+    <div class="status-pills">
+      <button type="button" [class.active]="selectedStatus === 'All'" (click)="onParentStatusChange('All')">All Tickets</button>
+      <button
+        type="button"
+        *ngFor="let status of statuses; trackBy: trackByValue"
+        [class.active]="selectedStatus === status"
+        (click)="onParentStatusChange(status)">
+        <span class="dot" [ngClass]="getStatusDotClass(status)"></span>
+        {{ getStatusLabel(status) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Secondary Facility & Category Filters -->
+  <div class="filter-card">
+    <div class="filter-group search-group">
+      <label for="ticket-search">Search tickets</label>
+      <input
+        id="ticket-search"
+        type="search"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="applyFilters()"
+        class="filter-select"
+        placeholder="ID, category, location, room, description..."
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Category</label>
+      <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="All">All Categories</option>
+        <option *ngFor="let cat of categories; trackBy: trackByValue" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+
+    <div class="filter-group">
+      <label>Building</label>
+      <select [(ngModel)]="selectedBuilding" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="All">All Buildings</option>
+        <option *ngFor="let bld of buildings; trackBy: trackByValue" [value]="bld">{{ bld }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tickets Data Table -->
+  <div class="table-card">
+    <table class="tickets-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Room</th>
+          <th>Status</th>
+          <th>Assigned Technician</th>
+          <th>Created Time</th>
+          <th class="text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ticket of filteredTickets; trackBy: trackTicketById">
+          <td class="font-bold">#{{ ticket.id }}</td>
+          <td>
+            <span class="category-tag">{{ ticket.category }}</span>
+          </td>
+          <td><strong>{{ ticket.buildingName }}</strong></td>
+          <td>{{ ticket.room }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(ticket.status)">
+              {{ getStatusLabel(ticket.status) }}
+            </span>
+          </td>
+          <td>
+            <span *ngIf="ticket.technicianID" class="tech-name">
+              <svg class="tech-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              #{{ ticket.technicianID }}
+            </span>
+            <span *ngIf="!ticket.technicianID" class="unassigned-text">Unassigned</span>
+          </td>
+          <td class="date-cell">{{ ticket.createdAt | date:'medium' }}</td>
+          <td class="text-right">
+            <button class="btn-detail" (click)="openTicketDetails(ticket)">View Details</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="isLoading">
+          <td colspan="8" class="empty-state">Loading tickets...</td>
+        </tr>
+        <tr *ngIf="!isLoading && filteredTickets.length === 0">
+          <td colspan="8" class="empty-state">
+            {{ tickets.length ? 'No tickets match your filters.' : 'No tickets are available.' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Ticket Detail & Technician Assignment Modal -->
+<div class="modal-backdrop" *ngIf="isDetailModalOpen" (click)="closeDetailModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h3>Ticket #{{ selectedTicket?.id }}: {{ selectedTicket?.category }}</h3>
+        <span class="modal-sub">{{ selectedTicket?.buildingName }} (Room {{ selectedTicket?.room }})</span>
+      </div>
+      <button class="close-btn" (click)="closeDetailModal()">×</button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedTicket">
+      <!-- Status & Issue Description -->
+      <div class="modal-section">
+        <label class="section-label">Current Lifecycle State</label>
+        <div>
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(selectedTicket.status)">
+            {{ getStatusLabel(selectedTicket.status) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <label class="section-label">Issue Description</label>
+        <p class="description-box">{{ selectedTicket.description }}</p>
+      </div>
+
+      <!-- Technician Assignment Form -->
+      <div class="modal-section assign-box" *ngIf="selectedTicket.status === 'New' || selectedTicket.status === 'Assigned'">
+        <h4 class="assign-title">
+          <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          Assign / Re-Assign Technician
+        </h4>
+
+        <div class="assign-form-grid">
+          <div class="form-group">
+            <label for="technicianIdInput">Technician ID</label>
+            <input
+              id="technicianIdInput"
+              type="number"
+              min="1"
+              [(ngModel)]="assignTechnicianId"
+              placeholder="Enter technician ID (e.g. 1)"
+              class="filter-input"
+            />
+          </div>
+        </div>
+
+        <div class="assign-action">
+          <button
+            class="btn-assign"
+            [disabled]="!assignTechnicianId || isAssigning"
+            (click)="submitAssignment()">
+            {{ isAssigning ? 'Assigning...' : 'Confirm Assignment & Update Status to Assigned' }}
+          </button>
+        </div>
+        <p class="list-message error-message" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+      </div>
+
+      <!-- Lifecycle History Timeline -->
+      <div class="modal-section" *ngIf="selectedTicket.history && selectedTicket.history.length > 0">
+        <label class="section-label">Status Change Timeline</label>
+        <div class="timeline">
+          <div class="timeline-item" *ngFor="let item of selectedTicket.history">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <strong>{{ getStatusLabel(item.toStatus) }}</strong>
+              <span *ngIf="item.fromStatus"> (Moved from {{ getStatusLabel(item.fromStatus) }})</span>
+              <div class="timeline-time">{{ item.changedAt | date:'medium' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

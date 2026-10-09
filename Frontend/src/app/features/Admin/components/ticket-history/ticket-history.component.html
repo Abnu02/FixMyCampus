@@ -1,0 +1,128 @@
+<div class="history-container">
+  <div class="header-section">
+    <div>
+      <h2 class="section-title">Resolved Ticket Audit Log</h2>
+      <p class="section-subtitle">Complete historical archive of resolved issues and technician repair timestamps.</p>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filter-card">
+    <div class="search-box">
+      <label>Search History</label>
+      <input
+        id="history-search"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+        placeholder="Search by ID, keyword, or building..."
+        class="filter-input"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Category</label>
+      <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="All">All Categories</option>
+        <option *ngFor="let cat of categories; trackBy: trackByValue" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="history-message error-message" *ngIf="errorMessage" role="alert">
+    {{ errorMessage }}
+    <button type="button" class="retry-btn" (click)="loadHistory()">Retry</button>
+  </div>
+
+  <!-- History Data Table -->
+  <div class="table-card">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Technician ID</th>
+          <th>Created Date</th>
+          <th>Resolved Date</th>
+          <th class="text-right">Audit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ticket of filteredHistory; trackBy: trackByTicketId">
+          <td class="font-bold">#{{ ticket.id }}</td>
+          <td><span class="category-tag">{{ ticket.category }}</span></td>
+          <td><strong>{{ ticket.buildingName }}</strong> — Room {{ ticket.room }}</td>
+          <td>
+            <span class="tech-name">
+              <svg class="tech-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              {{ ticket.technicianID ? '#' + ticket.technicianID : 'N/A' }}
+            </span>
+          </td>
+          <td class="date-cell">{{ ticket.createdAt | date:'medium' }}</td>
+          <td class="date-cell resolved-date">
+            <ng-container *ngIf="ticket.resolvedAt; else missingResolvedDate">
+              {{ ticket.resolvedAt | date:'medium' }}
+            </ng-container>
+            <ng-template #missingResolvedDate>—</ng-template>
+          </td>
+          <td class="text-right">
+            <button class="btn-detail" (click)="viewDetails(ticket)">Full Audit Log</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="isLoading">
+          <td colspan="7" class="empty-state">Loading resolved tickets...</td>
+        </tr>
+        <tr *ngIf="!isLoading && !errorMessage && filteredHistory.length === 0">
+          <td colspan="7" class="empty-state">
+            {{ resolvedTickets.length ? 'No resolved tickets match your filters.' : 'No resolved tickets found.' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- History Detail Modal -->
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h3>Audit Log — Ticket #{{ selectedTicket?.id }}</h3>
+        <span class="modal-sub">{{ selectedTicket?.buildingName }}</span>
+      </div>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="history-message error-message" *ngIf="detailErrorMessage" role="alert">
+      {{ detailErrorMessage }}
+    </div>
+
+    <div class="modal-body" *ngIf="selectedTicket">
+      <div class="modal-section">
+        <label class="section-label">Final Status</label>
+        <div><span class="status-badge badge-resolved">Resolved</span></div>
+      </div>
+
+      <div class="modal-section">
+        <label class="section-label">Issue Summary</label>
+        <p class="description-box">{{ selectedTicket.description }}</p>
+      </div>
+
+      <div class="modal-section">
+        <label class="section-label">Complete Transition History</label>
+        <div class="timeline">
+          <div class="timeline-item" *ngFor="let item of selectedTicket.history">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <strong>{{ item.toStatus === 'InProgress' ? 'In Progress' : item.toStatus }}</strong>
+              <span *ngIf="item.fromStatus"> (Changed from {{ item.fromStatus === 'InProgress' ? 'In Progress' : item.fromStatus }})</span>
+              <div class="timeline-time">{{ item.changedAt | date:'medium' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

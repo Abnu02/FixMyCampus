@@ -74,7 +74,7 @@ export class LoginComponent {
     } else if (role === 'Technician') {
       this.router.navigate(['/technician']);
     } else {
-      this.router.navigate(['/feed']);
+      this.router.navigate(['/reporter']);
     }
   }
 }

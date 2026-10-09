@@ -7,6 +7,7 @@ import {
   RegisterRequest,
   AuthResponse
 } from './auth.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  // Backend API URL matching Backend/FixMyCampus.Api launchSettings.json (port 5168)
-  private readonly apiUrl = 'http://localhost:5168/api/v1/auth';
+  private readonly apiUrl = `${environment.apiBaseUrl}/auth`;
 
   // Signals for reactive session management
   readonly currentUser = signal<AuthResponse | null>(this.getStoredUser());
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('fixmycampus_token');
+    return localStorage.getItem('fixmycampus_token') || localStorage.getItem('token');
   }
 
   private getStoredUser(): AuthResponse | null {
