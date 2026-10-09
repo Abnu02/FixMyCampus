@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Ticket, TicketStatus } from '../../models/ticket.model';
 import { AdminTicketService } from '../../services/admin-ticket.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+
 
 @Component({
   selector: 'app-ticket-list',
@@ -22,8 +22,8 @@ export class TicketListComponent implements OnInit {
   searchQuery = '';
   isLoading = false;
   isAssigning = false;
+  isChangingStatus = false;
   errorMessage = '';
-  debugInfo = '';
 
   // Detail Modal State
   selectedTicket: Ticket | null = null;
@@ -32,7 +32,10 @@ export class TicketListComponent implements OnInit {
   // Assignment Form State — uses technicianId (int) to match backend
   assignTechnicianId: number | null = null;
 
-  constructor(private adminTicketService: AdminTicketService, private authService: AuthService) {}
+  // Status Change State
+  selectedNewStatus: TicketStatus | '' = '';
+
+  constructor(private adminTicketService: AdminTicketService) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -41,18 +44,13 @@ export class TicketListComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    const token = this.authService.getToken();
-    this.debugInfo = `Token: ${token ? token.substring(0, 20) + '...' : 'MISSING'} | User: ${this.authService.currentUser()?.email || 'none'} | Role: ${this.authService.currentUser()?.role || 'none'}`;
-    console.log('[TicketListComponent] Requesting tickets. Debug:', this.debugInfo);
     this.adminTicketService.getTickets().subscribe({
       next: (data) => {
-        console.log('[TicketListComponent] Received data:', data);
         try {
           this.tickets = Array.isArray(data) ? data : [];
           this.categories = this.getUniqueValues(this.tickets.map(ticket => ticket?.category || ''));
           this.buildings = this.getUniqueValues(this.tickets.map(ticket => ticket?.buildingName || ''));
           this.applyFilters();
-          this.debugInfo = `Loaded ${this.tickets.length} tickets OK`;
         } catch (e) {
           console.error('[TicketListComponent] Error processing tickets data:', e);
         } finally {
@@ -60,11 +58,7 @@ export class TicketListComponent implements OnInit {
         }
       },
       error: (err) => {
-        const status = err?.status;
-        const msg = err?.error?.message || err?.message || 'Unknown error';
-        this.debugInfo = `HTTP Error ${status}: ${msg}`;
-        console.error('[TicketListComponent] Error loading tickets:', err);
-        this.errorMessage = `Error ${status}: ${msg}`;
+        this.errorMessage = err?.error?.message || 'Tickets could not be loaded.';
         this.isLoading = false;
       }
     });
@@ -98,6 +92,7 @@ export class TicketListComponent implements OnInit {
       next: (detail) => {
         this.selectedTicket = detail ?? ticket;
         this.assignTechnicianId = this.selectedTicket.technicianID ?? null;
+        this.selectedNewStatus = this.selectedTicket.status as TicketStatus;
         this.isDetailModalOpen = true;
       },
       error: () => {
@@ -110,6 +105,28 @@ export class TicketListComponent implements OnInit {
     this.isDetailModalOpen = false;
     this.selectedTicket = null;
     this.assignTechnicianId = null;
+    this.selectedNewStatus = '';
+  }
+
+  submitStatusChange(): void {
+    if (!this.selectedTicket || !this.selectedNewStatus || this.isChangingStatus) return;
+    if (this.selectedNewStatus === this.selectedTicket.status) {
+      this.errorMessage = 'Please select a different status.';
+      return;
+    }
+    this.isChangingStatus = true;
+    this.errorMessage = '';
+    this.adminTicketService.updateStatus(this.selectedTicket.id, this.selectedNewStatus).subscribe({
+      next: () => {
+        this.isChangingStatus = false;
+        this.closeDetailModal();
+        this.loadData();
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Status update failed. Please try again.';
+        this.isChangingStatus = false;
+      }
+    });
   }
 
   private getUniqueValues(values: string[]): string[] {
